@@ -160,15 +160,70 @@ select option { background:var(--panel); }
 .pa { color:var(--green); }
 .patm { color:var(--cyan); }
 
-.sidebar-footer { padding:14px 22px; border-top:1px solid var(--border); display:flex; flex-direction:column; gap:8px; flex-shrink:0; }
+.sidebar-footer { padding:14px 22px 18px; border-top:1px solid var(--border); display:flex; flex-direction:column; gap:10px; flex-shrink:0; }
 .btn-row { display:flex; gap:7px; }
-.btn { flex:1; padding:10px 14px; border:none; border-radius:6px; font-family:var(--sans); font-size:.8rem; font-weight:600; cursor:pointer; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:6px; letter-spacing:.02em; }
+.btn { flex:1; padding:10px 14px; border:none; border-radius:8px; font-family:var(--sans); font-size:.82rem; font-weight:600; cursor:pointer; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:6px; letter-spacing:.02em; }
 .btn-primary { background:var(--amber); color:#000; }
 .btn-primary:hover { background:#fbbf24; box-shadow:0 0 18px rgba(245,158,11,.35); }
 .btn-ghost { background:var(--panel); color:var(--text-muted); border:1px solid var(--border); }
 .btn-ghost:hover { color:var(--text); border-color:var(--border-bright); }
 .btn-save { background:transparent; color:var(--cyan); border:1px solid var(--cyan-dim); width:100%; }
 .btn-save:hover { background:rgba(34,211,238,.07); }
+
+/* Big CTA button — salva in raccolta */
+.btn-collect {
+  width:100%; padding:14px 18px;
+  background:linear-gradient(135deg, #14532d 0%, #166534 50%, #15803d 100%);
+  border:1px solid #22c55e55; border-radius:10px; color:#4ade80;
+  font-family:var(--sans); font-size:.92rem; font-weight:700;
+  cursor:pointer; transition:all .22s; letter-spacing:.04em;
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  box-shadow:0 2px 12px rgba(34,197,94,.15);
+  position:relative; overflow:hidden;
+}
+.btn-collect::before {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(135deg,transparent 0%,rgba(74,222,128,.08) 50%,transparent 100%);
+  transform:translateX(-100%); transition:transform .4s;
+}
+.btn-collect:hover::before { transform:translateX(100%); }
+.btn-collect:hover {
+  background:linear-gradient(135deg,#166534 0%,#15803d 50%,#16a34a 100%);
+  color:#86efac; box-shadow:0 0 24px rgba(34,197,94,.35); transform:translateY(-1px);
+}
+.btn-collect:active { transform:scale(.98); }
+.btn-collect-icon { font-size:1.1rem; }
+.btn-collect-label { display:flex; flex-direction:column; align-items:flex-start; line-height:1.2; }
+.btn-collect-label .bcl-main { font-size:.9rem; font-weight:700; }
+.btn-collect-label .bcl-sub { font-size:.65rem; font-weight:400; color:#86efac; opacity:.7; letter-spacing:.06em; }
+
+/* In-tab save button (shuffle/import) */
+.btn-save-to-coll {
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  width:100%; padding:13px 18px; margin-top:14px;
+  background:rgba(34,197,94,.08); border:1.5px solid rgba(34,197,94,.3);
+  border-radius:10px; color:#4ade80;
+  font-family:var(--sans); font-size:.84rem; font-weight:600;
+  cursor:pointer; transition:all .2s; letter-spacing:.03em;
+}
+.btn-save-to-coll:hover {
+  background:rgba(34,197,94,.15); border-color:#22c55e;
+  box-shadow:0 0 18px rgba(34,197,94,.2); color:#86efac;
+}
+.btn-save-to-coll .bstc-icon { font-size:1rem; }
+
+/* Variant card save button */
+.variant-card { position:relative; }
+.variant-save-btn {
+  position:absolute; bottom:10px; right:10px;
+  background:rgba(34,197,94,.12); border:1px solid rgba(34,197,94,.25);
+  border-radius:6px; color:#4ade80;
+  font-family:var(--mono); font-size:.62rem; letter-spacing:.08em;
+  padding:4px 10px; cursor:pointer; transition:all .18s;
+  opacity:0;
+}
+.variant-card:hover .variant-save-btn { opacity:1; }
+.variant-save-btn:hover { background:rgba(34,197,94,.25); border-color:#22c55e; }
 
 /* IMPORT */
 .import-area { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:14px; font-family:var(--mono); font-size:.82rem; color:var(--text); width:100%; height:180px; resize:vertical; outline:none; transition:border-color .2s; }
@@ -275,6 +330,197 @@ select option { background:var(--panel); }
 /* TOAST */
 .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(16px); background:var(--green); color:#fff; font-family:var(--mono); font-size:.76rem; font-weight:600; padding:11px 22px; border-radius:6px; opacity:0; transition:all .28s cubic-bezier(.4,0,.2,1); pointer-events:none; letter-spacing:.05em; z-index:9000; box-shadow:0 4px 18px rgba(34,197,94,.3); }
 .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* ═══════════════════════════════════════
+   RACCOLTA PROMPT — Redesign
+═══════════════════════════════════════ */
+.collection-toolbar {
+  display:grid; grid-template-columns:1fr auto auto;
+  align-items:center; gap:10px;
+  padding:16px 20px; border-bottom:1px solid var(--border);
+  background:var(--surface); position:sticky; top:0; z-index:5;
+}
+.collection-count {
+  font-family:var(--mono); font-size:.72rem; color:var(--text-muted);
+  letter-spacing:.08em;
+}
+.collection-count strong { color:var(--amber); font-size:.9rem; }
+.coll-btn {
+  font-family:var(--sans); font-size:.78rem; font-weight:600; letter-spacing:.03em;
+  padding:8px 16px; border-radius:7px; cursor:pointer; border:none;
+  transition:all .18s; display:flex; align-items:center; gap:6px;
+}
+.coll-btn-export {
+  background:rgba(34,211,238,.1); color:var(--cyan);
+  border:1px solid rgba(34,211,238,.25);
+}
+.coll-btn-export:hover { background:rgba(34,211,238,.18); box-shadow:0 0 14px rgba(34,211,238,.2); }
+.coll-btn-danger { background:rgba(239,68,68,.08); color:#f87171; border:1px solid rgba(239,68,68,.2); }
+.coll-btn-danger:hover { background:rgba(239,68,68,.15); }
+
+.coll-filter-row {
+  display:flex; gap:6px; align-items:center;
+  padding:10px 20px; border-bottom:1px solid var(--border);
+  flex-wrap:wrap; background:var(--panel);
+}
+.coll-filter-label {
+  font-family:var(--mono); font-size:.6rem; color:var(--text-dim);
+  letter-spacing:.1em; margin-right:2px;
+}
+.coll-filter-btn {
+  font-family:var(--mono); font-size:.66rem; letter-spacing:.06em;
+  padding:5px 12px; border-radius:20px; cursor:pointer;
+  border:1px solid var(--border); background:transparent;
+  color:var(--text-dim); transition:all .18s;
+}
+.coll-filter-btn.active {
+  border-color:var(--amber); color:var(--amber);
+  background:var(--amber-glow);
+}
+.coll-filter-btn:not(.active):hover { border-color:var(--border-bright); color:var(--text-muted); }
+.coll-sort {
+  font-family:var(--mono); font-size:.65rem; padding:5px 10px;
+  border-radius:6px; border:1px solid var(--border);
+  background:var(--panel); color:var(--text-muted);
+  cursor:pointer; margin-left:auto;
+}
+
+.collection-list {
+  display:flex; flex-direction:column; gap:0;
+  padding:16px 20px; overflow-y:auto; flex:1;
+  max-height:calc(100vh - 230px);
+}
+.coll-empty {
+  text-align:center; padding:70px 20px;
+  font-family:var(--mono); font-size:.8rem;
+  color:var(--text-dim); letter-spacing:.08em; line-height:2.2;
+}
+.coll-empty-icon { font-size:3rem; opacity:.25; margin-bottom:16px; }
+.coll-empty-hint {
+  display:inline-block; margin-top:12px;
+  background:rgba(34,197,94,.08); border:1px solid rgba(34,197,94,.2);
+  color:#4ade80; font-size:.72rem; padding:8px 18px; border-radius:8px;
+}
+
+/* Prompt card */
+.coll-card {
+  border:1px solid var(--border); border-radius:10px;
+  margin-bottom:10px; background:var(--panel);
+  transition:all .18s; overflow:hidden;
+}
+.coll-card:hover { border-color:rgba(245,158,11,.2); box-shadow:0 2px 14px rgba(0,0,0,.3); }
+.coll-card-header {
+  display:flex; align-items:center; gap:10px;
+  padding:12px 16px; cursor:pointer; user-select:none;
+}
+.coll-card-index {
+  font-family:var(--display); font-size:1.2rem; color:var(--amber);
+  min-width:34px; text-align:center; opacity:.5;
+}
+.coll-card-meta {
+  display:flex; flex-direction:column; gap:2px; flex:1; min-width:0;
+}
+.coll-card-date {
+  font-family:var(--mono); font-size:.6rem; color:var(--text-dim); letter-spacing:.06em;
+}
+.coll-card-preview {
+  font-family:var(--mono); font-size:.76rem; color:var(--text-muted);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.coll-card-preview strong { color:var(--text); }
+.coll-card-right {
+  display:flex; align-items:center; gap:8px; flex-shrink:0;
+}
+.coll-source-badge {
+  font-family:var(--mono); font-size:.58rem; padding:2px 7px;
+  border-radius:3px; letter-spacing:.06em;
+}
+.src-builder { background:rgba(245,158,11,.1); color:var(--amber); border:1px solid rgba(245,158,11,.15); }
+.src-shuffle  { background:rgba(168,85,247,.08); color:#a78bfa; border:1px solid rgba(168,85,247,.15); }
+.src-import   { background:rgba(34,211,238,.08); color:var(--cyan); border:1px solid rgba(34,211,238,.15); }
+
+/* Stars */
+.coll-stars { display:flex; gap:1px; }
+.star-btn {
+  background:none; border:none; cursor:pointer; padding:2px 1px;
+  font-size:.95rem; transition:transform .12s; color:var(--border-bright);
+}
+.star-btn:hover { transform:scale(1.35); }
+.star-btn.lit { color:#f59e0b; }
+
+/* Fav */
+.fav-btn {
+  background:none; border:none; cursor:pointer;
+  font-size:1.05rem; padding:2px 4px;
+  transition:transform .15s; color:var(--border-bright);
+}
+.fav-btn.lit { color:#f87171; }
+.fav-btn:hover { transform:scale(1.3); }
+
+.coll-chevron {
+  font-size:.7rem; color:var(--text-dim); transition:transform .2s; margin-left:2px;
+}
+.coll-card.expanded .coll-chevron { transform:rotate(180deg); }
+
+/* Expanded body */
+.coll-card-body {
+  display:none; border-top:1px solid rgba(255,255,255,.04);
+}
+.coll-card.expanded .coll-card-body { display:block; }
+.coll-body-inner { padding:14px 16px; display:flex; flex-direction:column; gap:10px; }
+
+.coll-prompt-text {
+  font-family:var(--mono); font-size:.8rem; line-height:1.9;
+  color:var(--text); background:rgba(0,0,0,.3);
+  border:1px solid var(--border); border-radius:7px;
+  padding:12px 14px; white-space:pre-wrap; word-break:break-word;
+}
+.coll-prompt-text .ph { color:var(--amber); }
+.coll-prompt-text .pc { color:var(--text-dim); font-style:italic; }
+.coll-prompt-text .pa { color:var(--green); }
+
+.coll-card-btns {
+  display:flex; gap:6px; flex-wrap:wrap;
+}
+.ccbtn {
+  font-family:var(--sans); font-size:.75rem; font-weight:600;
+  padding:7px 14px; border-radius:7px; cursor:pointer;
+  border:none; transition:all .18s; display:flex; align-items:center; gap:5px;
+}
+.ccbtn-copy { background:rgba(245,158,11,.12); color:var(--amber); border:1px solid rgba(245,158,11,.25); }
+.ccbtn-copy:hover { background:rgba(245,158,11,.22); }
+.ccbtn-del { background:rgba(239,68,68,.08); color:#f87171; border:1px solid rgba(239,68,68,.2); margin-left:auto; }
+.ccbtn-del:hover { background:rgba(239,68,68,.18); }
+
+.coll-note-area {
+  width:100%; box-sizing:border-box;
+  background:rgba(0,0,0,.2); border:1px solid var(--border);
+  border-radius:7px; color:var(--text-muted); font-family:var(--mono);
+  font-size:.74rem; padding:9px 12px; resize:vertical; min-height:56px;
+  outline:none; transition:border-color .18s;
+}
+.coll-note-area:focus { border-color:var(--amber-dim); }
+.coll-note-area::placeholder { color:var(--text-dim); }
+
+/* WIP video section */
+.coll-video-section {
+  border:1px dashed rgba(245,158,11,.15); border-radius:8px;
+  padding:10px 14px; background:rgba(245,158,11,.02);
+}
+.coll-video-label {
+  font-family:var(--mono); font-size:.6rem; color:var(--amber);
+  letter-spacing:.14em; margin-bottom:6px; display:flex;
+  align-items:center; gap:8px; opacity:.6;
+}
+.wip-badge {
+  font-size:.52rem; padding:2px 6px; border-radius:3px;
+  background:rgba(245,158,11,.1); border:1px solid rgba(245,158,11,.2);
+  color:var(--amber); letter-spacing:.1em;
+}
+.coll-video-placeholder {
+  font-family:var(--mono); font-size:.68rem; color:var(--text-dim);
+  text-align:center; padding:12px 0; letter-spacing:.04em; opacity:.5;
+}
 </style>
 </head>
 <body>
@@ -299,6 +545,7 @@ select option { background:var(--panel); }
       <button class="tab-btn active" id="tab-builder" onclick="showTab('builder')"><span data-t="tabBuilder">⬡ Costruttore</span></button>
       <button class="tab-btn" id="tab-import" onclick="showTab('import')"><span data-t="tabImport">↓ Importa</span></button>
       <button class="tab-btn" id="tab-shuffle" onclick="showTab('shuffle')"><span data-t="tabShuffle">⚄ Shuffle</span></button>
+      <button class="tab-btn" id="tab-collection" onclick="showTab('collection')"><span data-t="tabCollection">☰ Raccolta</span></button>
     </div>
 
     <div class="tab-pane active" id="pane-builder">
@@ -396,7 +643,13 @@ select option { background:var(--panel); }
           <span class="shuffle-copy-hint" data-t="shuffleCopyHint">click per copiare</span>
         </div>
         <div class="shuffle-tags" id="shuffleTags"></div>
-        <button class="shuffle-again" onclick="runShuffle()" data-t="btnShuffleAgain">↻ ancora</button>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <button class="shuffle-again" onclick="runShuffle()" data-t="btnShuffleAgain">↻ ancora</button>
+          <button class="btn-save-to-coll" onclick="collSaveShufflePrompt()" style="margin-top:0;flex:1">
+            <span class="bstc-icon">📋</span>
+            <span data-t="btnSaveColl">Salva in Raccolta</span>
+          </button>
+        </div>
         <div class="shuffle-counter" id="shuffleCounter"></div>
       </div>
     </div>
@@ -407,11 +660,49 @@ select option { background:var(--panel); }
         <div class="section-label"><span class="section-num">↓</span><span class="section-title" data-t="importTitle">IMPORTA PROMPT</span></div>
         <div class="field">
           <div class="field-label" data-t="lblImportArea">Incolla prompt esistente</div>
-          <textarea class="import-area" id="importText" placeholder="Wide establishing shot - Cinematic&#10;Urban street&#10;Night time&#10;The camera pans left."></textarea>
+          <textarea class="import-area" id="importText" placeholder="A wide cinematic shot of an urban street at night, neon glow, a lone figure walks slowly through the rain, the camera follows at a distance." oninput="document.getElementById('importSaveBtn').style.display=this.value.trim()?'block':'none'"></textarea>
         </div>
         <button class="btn btn-variants" onclick="generateVariants()"><span>✦</span><span data-t="btnVariants"> Genera 5 Varianti</span></button>
       </div>
       <div class="variants-grid" id="variantsGrid"></div>
+      <div id="importSaveBtn" style="display:none">
+        <button class="btn-save-to-coll" onclick="collSaveImportPrompt()">
+          <span class="bstc-icon">📋</span>
+          <span data-t="btnSaveImport">Salva prompt importato in Raccolta</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- RACCOLTA TAB -->
+    <div class="tab-pane" id="pane-collection">
+      <!-- Toolbar -->
+      <div class="collection-toolbar">
+        <div class="collection-count">
+          <strong id="collCount">0</strong> <span data-t="collCountLabel">prompt salvati</span>
+        </div>
+        <button class="coll-btn coll-btn-export" onclick="collExportAll()">
+          ⬇ <span data-t="collBtnExport">Esporta .txt</span>
+        </button>
+        <button class="coll-btn coll-btn-danger" onclick="collClearAll()">
+          ✕ <span data-t="collBtnClear">Svuota</span>
+        </button>
+      </div>
+      <!-- Filtri -->
+      <div class="coll-filter-row">
+        <span class="coll-filter-label" data-t="collFilterLabel">FILTRO</span>
+        <button class="coll-filter-btn active" id="filt-all"   onclick="collFilter('all')"   data-t="filtAll">Tutti</button>
+        <button class="coll-filter-btn"        id="filt-5"     onclick="collFilter('5')">★★★★★</button>
+        <button class="coll-filter-btn"        id="filt-4"     onclick="collFilter('4')">★ 4+</button>
+        <button class="coll-filter-btn"        id="filt-fav"   onclick="collFilter('fav')"   data-t="filtFav">♥ Preferiti</button>
+        <button class="coll-filter-btn"        id="filt-noted" onclick="collFilter('noted')" data-t="filtNoted">📝 Note</button>
+        <select class="coll-sort" onchange="collSort(this.value)">
+          <option value="newest">↓ Recenti</option>
+          <option value="oldest">↑ Vecchi</option>
+          <option value="stars">★ Stelle</option>
+        </select>
+      </div>
+      <!-- Lista -->
+      <div class="collection-list" id="collectionList"></div>
     </div>
 
   </div>
@@ -425,27 +716,37 @@ select option { background:var(--panel); }
         <div class="progress-text" id="progressText">0/6</div>
       </div>
       <div class="stats-row">
-        <div class="stat"><div class="stat-val" id="statLines">0</div><div class="stat-key" data-t="statLines">RIGHE</div></div>
+        <div class="stat"><div class="stat-val" id="statLines">0</div><div class="stat-key" data-t="statLines">ELEMENTI</div></div>
         <div class="stat"><div class="stat-val" id="statChars">0</div><div class="stat-key" data-t="statChars">CARATTERI</div></div>
         <div class="stat"><div class="stat-val" id="statSections">0</div><div class="stat-key" data-t="statSections">SEZIONI</div></div>
+        <div class="stat"><div class="stat-val" style="color:var(--green)">1</div><div class="stat-key" style="color:var(--green)" data-t="statVideos">VIDEO</div></div>
       </div>
     </div>
     <div class="preview-box-wrap"><div class="preview-box" id="previewBox"></div></div>
     <div class="sidebar-footer">
+      <!-- SALVA IN RACCOLTA — azione principale verde grande -->
+      <button class="btn-collect" onclick="collSaveCurrentPrompt()">
+        <span class="btn-collect-icon">📋</span>
+        <div class="btn-collect-label">
+          <span class="bcl-main" data-t="btnAddColl">SALVA IN RACCOLTA</span>
+          <span class="bcl-sub" data-t="btnAddCollSub">aggiunge il prompt attuale</span>
+        </div>
+      </button>
+      <!-- Azioni secondarie -->
       <div class="btn-row">
         <button class="btn btn-primary" onclick="copyPrompt()">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
           <span data-t="btnCopy">Copia</span>
         </button>
+        <button class="btn btn-ghost" onclick="saveFile()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span data-t="btnSave">.txt</span>
+        </button>
         <button class="btn btn-ghost" onclick="resetForm()">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
           <span data-t="btnReset">Reset</span>
         </button>
       </div>
-      <button class="btn btn-save" onclick="saveFile()">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        <span data-t="btnSave">Salva .txt</span>
-      </button>
     </div>
   </div>
 </div>
@@ -697,8 +998,8 @@ const T = {
     lblCharCount:'Numero personaggi', lblCamera:'Movimento camera',
     lblFocus:'Fuoco', lblAmbient:'Suoni ambientali', lblDialogue:'Dialogo',
     importTitle:'IMPORTA PROMPT', lblImportArea:'Incolla prompt esistente',
-    previewTitle:'OUTPUT PREVIEW', statLines:'RIGHE', statChars:'CARATTERI',
-    statSections:'SEZIONI', btnCopy:'Copia', btnReset:'Reset', btnSave:'Salva .txt',
+    previewTitle:'OUTPUT PREVIEW', statLines:'ELEMENTI', statChars:'CARATTERI',
+    statSections:'SEZIONI', statVideos:'VIDEO', btnCopy:'Copia', btnReset:'Reset', btnSave:'Salva .txt',
     btnVariants:'Genera 5 Varianti',
     tabShuffle:'⚄ Shuffle',
     shuffleTitle:'Combinazione casuale',
@@ -711,6 +1012,17 @@ const T = {
     defaultPreview:'Seleziona le opzioni per generare il prompt...',
     toastCopied:'✓ Copiato negli appunti', toastSaved:'✓ File salvato',
     toastVariants:'✓ Varianti generate', noneOption:'—',
+    tabCollection:'☰ Raccolta',
+    collCountLabel:'prompt salvati', collBtnSave:'⊕ Salva prompt attuale',
+    collBtnExport:'⬇ Esporta .txt', collBtnClear:'✕ Svuota raccolta',
+    collEmpty:'Nessun prompt salvato.\nClicca ⊕ per aggiungere il prompt attuale.',
+    collFilterLabel:'FILTRO:', filtAll:'Tutti', filtFav:'Preferiti', filtNoted:'Con note',
+    sortNewest:'↓ Più recenti', sortOldest:'↑ Più vecchi', sortStars:'★ Per stelle',
+    toastCollSaved:'✓ Prompt salvato in raccolta', toastCollCleared:'✓ Raccolta svuotata',
+    toastCollExported:'✓ Esportato', btnAddColl:'SALVA IN RACCOLTA', btnAddCollSub:'aggiunge il prompt attuale',
+    collNotePlaceholder:'Note su questo prompt...', collVideoLabel:'VIDEO GENERATO',
+    collCardCopy:'Copia prompt', collCardDel:'Elimina',
+    btnSaveColl:'Salva in Raccolta', btnSaveImport:'Salva prompt in Raccolta',
   },
   en:{
     recLabel:'LIVE', tabBuilder:'⬡ Builder', tabImport:'↓ Import',
@@ -724,8 +1036,8 @@ const T = {
     lblCharCount:'Characters', lblCamera:'Camera movement',
     lblFocus:'Focus', lblAmbient:'Ambient sound', lblDialogue:'Dialogue',
     importTitle:'IMPORT PROMPT', lblImportArea:'Paste existing prompt',
-    previewTitle:'OUTPUT PREVIEW', statLines:'LINES', statChars:'CHARS',
-    statSections:'SECTIONS', btnCopy:'Copy', btnReset:'Reset', btnSave:'Save .txt',
+    previewTitle:'OUTPUT PREVIEW', statLines:'ELEMENTS', statChars:'CHARS',
+    statSections:'SECTIONS', statVideos:'VIDEO', btnCopy:'Copy', btnReset:'Reset', btnSave:'Save .txt',
     btnVariants:'Generate 5 Variants',
     tabShuffle:'⚄ Shuffle',
     shuffleTitle:'Random combination',
@@ -738,6 +1050,17 @@ const T = {
     defaultPreview:'Select options to generate your prompt...',
     toastCopied:'✓ Copied to clipboard', toastSaved:'✓ File saved',
     toastVariants:'✓ Variants generated', noneOption:'—',
+    tabCollection:'☰ Collection',
+    collCountLabel:'prompts saved', collBtnSave:'⊕ Save current prompt',
+    collBtnExport:'⬇ Export .txt', collBtnClear:'✕ Clear all',
+    collEmpty:'No prompts saved yet.\nClick ⊕ to add the current prompt.',
+    collFilterLabel:'FILTER:', filtAll:'All', filtFav:'Favorites', filtNoted:'With notes',
+    sortNewest:'↓ Newest', sortOldest:'↑ Oldest', sortStars:'★ By stars',
+    toastCollSaved:'✓ Prompt saved to collection', toastCollCleared:'✓ Collection cleared',
+    toastCollExported:'✓ Exported', btnAddColl:'SAVE TO COLLECTION', btnAddCollSub:'adds the current prompt',
+    collNotePlaceholder:'Notes about this prompt...', collVideoLabel:'GENERATED VIDEO',
+    collCardCopy:'Copy prompt', collCardDel:'Delete',
+    btnSaveColl:'Save to Collection', btnSaveImport:'Save imported prompt to Collection',
   }
 };
 
@@ -876,17 +1199,42 @@ function updateCharFields() {
 }
 
 // ═══════════════════════════════════════════
-//  GENERATE PROMPT
+//  GENERATE PROMPT — Wan2GP format
+//  Rule: ONE line = ONE video, ending with "."
+//  Only # lines go on separate lines (Wan2GP skips them)
 // ═══════════════════════════════════════════
+
+// Templates for natural varied sentence openers
+const SHOT_OPENS = [
+  (shot,loc,light) => `${shot} of ${loc}, ${light}`,
+  (shot,loc,light) => `${light} ${shot} — ${loc}`,
+  (shot,loc,light) => `${shot}: ${loc} bathed in ${light}`,
+  (shot,loc,light) => `Opening with a ${shot} of ${loc} under ${light}`,
+  (shot,loc,light) => `${loc}, ${shot}, ${light}`,
+];
+const CAM_JOINS = [
+  cam => `the camera ${cam}`,
+  cam => `camera move: ${cam}`,
+  cam => `${cam} slowly`,
+  cam => cam,
+];
+const AUDIO_JOINS = [
+  (a) => `sound of ${a} in the background`,
+  (a) => `ambient: ${a}`,
+  (a) => `${a} fills the air`,
+  (a) => `background: ${a}`,
+];
+function pickV(arr) { return arr[Math.floor(Math.random()*arr.length)]; }
+
 function generatePrompt() {
-  const lines = [];
+  const comments = []; // # pacing comments — shown as own line, skipped by Wan2GP
+  const parts    = []; // everything else → ONE line = 1 video
   let sections = 0;
 
-  // 1. Shot
-  const shot  = document.getElementById('shotType').value;
-  const genre = document.getElementById('shotGenre').value;
+  // 1. Shot + genre + style
+  const shot   = document.getElementById('shotType').value;
+  const genre  = document.getElementById('shotGenre').value;
   const styles = getCheckedValues('styleChips');
-  if (shot||genre||styles.length) { lines.push([shot,genre,...styles].filter(Boolean).join(' - ')); sections++; }
 
   // 2. Setting
   const lighting = document.getElementById('lighting').value;
@@ -894,48 +1242,74 @@ function generatePrompt() {
   const location = document.getElementById('location').value;
   const timeOD   = document.getElementById('timeOfDay').value;
   const atm      = getCheckedValues('atmosphereChips');
-  const scene    = [lighting,colors,location,timeOD,...atm].filter(Boolean);
-  if (scene.length) { scene.forEach(s=>lines.push(s)); sections++; }
 
-  // 3. Action
+  // Build opening sentence if we have enough to form one
+  if (shot || location || lighting) {
+    const shotStr = [shot, genre, ...styles].filter(Boolean).join(' - ');
+    const locStr  = location || 'the scene';
+    const lightStr= [lighting, colors, timeOD].filter(Boolean).join(', ') || 'available light';
+    const atmStr  = atm.length ? ', ' + atm.join(', ') : '';
+    parts.push(pickV(SHOT_OPENS)(shotStr, locStr, lightStr) + atmStr);
+    sections++;
+  } else if (genre || styles.length) {
+    parts.push([genre,...styles].filter(Boolean).join(' - '));
+    sections++;
+  }
+
+  // If no opening was built but there's a setting
+  if (parts.length === 0 && (lighting||location||timeOD||atm.length)) {
+    const scene = [lighting,colors,location,timeOD,...atm].filter(Boolean);
+    parts.push(scene.join(', '));
+    sections++;
+  }
+
+  // 3. Action — pacing → # comment; action sequence → inline
   const pacingVals = getCheckedValues('pacingChips');
   let hasAction = false;
-  if (pacingVals.length) { lines.push(pacingVals[0]); hasAction=true; }
-  if (actionSequence.length) { actionSequence.forEach(a=>lines.push(a.v)); hasAction=true; }
+  if (pacingVals.length) { comments.push(pacingVals[0]); hasAction=true; }
+  if (actionSequence.length) {
+    actionSequence.forEach(a => parts.push(a.v));
+    hasAction = true;
+  }
   if (hasAction) sections++;
 
   // 4. Characters
-  const count = parseInt(document.getElementById('charCount').value)||0;
+  const charCount = parseInt(document.getElementById('charCount').value)||0;
   let hasChars = false;
-  for (let i=1; i<=count; i++) {
+  for (let i=1; i<=charCount; i++) {
     const el = document.getElementById(`char-${i}`);
-    if (el&&el.value) { lines.push(el.value); hasChars=true; }
+    if (el&&el.value) { parts.push(el.value); hasChars=true; }
   }
   if (hasChars) sections++;
 
   // 5. Camera
   const cam   = document.getElementById('cameraMove').value;
   const focus = document.getElementById('focus').value;
-  if (cam)   lines.push(cam);
-  if (focus) lines.push(focus);
+  if (cam)   parts.push(pickV(CAM_JOINS)(cam));
+  if (focus) parts.push(focus);
   if (cam||focus) sections++;
 
   // 6. Audio
   const ambient  = document.getElementById('ambient').value;
   const dialogue = document.getElementById('dialogue').value;
-  if (ambient)  lines.push(`Sound: ${ambient}`);
-  if (dialogue) lines.push(`"${dialogue}"`);
+  if (ambient && ambient !== 'Silence') parts.push(pickV(AUDIO_JOINS)(ambient));
+  if (dialogue) parts.push(`"${dialogue}"`);
   if (ambient||dialogue) sections++;
 
-  const prompt = lines.length ? lines.join('\n')+'.' : '';
-  renderPreview(prompt, lines.length, sections);
+  // Final: ALL parts on ONE line ending with "."
+  // # comments go on separate lines above (Wan2GP skips them)
+  const mainLine = parts.length ? parts.join(', ') + '.' : '';
+  const allLines = [...comments, mainLine].filter(Boolean);
+  const prompt   = allLines.join('\n');
+
+  renderPreview(prompt, parts.length, sections, comments);
   return prompt;
 }
 
 // ═══════════════════════════════════════════
 //  RENDER PREVIEW
 // ═══════════════════════════════════════════
-function renderPreview(prompt, lineCount, sections) {
+function renderPreview(prompt, partCount, sections, comments=[]) {
   const box = document.getElementById('previewBox');
   if (!prompt) {
     box.classList.remove('has-content');
@@ -943,17 +1317,39 @@ function renderPreview(prompt, lineCount, sections) {
   } else {
     box.classList.add('has-content');
     const atmVals = getCheckedValues('atmosphereChips');
-    const html = prompt.split('\n').map((line,i) => {
-      const esc = line.replace(/&/g,'&amp;').replace(/</g,'&lt;');
-      if (line.startsWith('#')) return `<span class="pc">${esc}</span>`;
-      if (line.startsWith('Sound:')||line.startsWith('"')) return `<span class="pa">${esc}</span>`;
-      if (atmVals.includes(line)) return `<span class="patm">${esc}</span>`;
-      if (i===0) return `<span class="ph">${esc}</span>`;
-      return esc;
-    }).join('\n');
+    // Build visual display: split the main line by ', ' for readability
+    // Comments shown as-is on their own lines
+    let html = '';
+    const rawLines = prompt.split('\n');
+    rawLines.forEach((line, li) => {
+      if (line.startsWith('#')) {
+        // comment line
+        const esc = line.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+        html += `<span class="pc">${esc}</span>\n`;
+      } else {
+        // main content line — split by ', ' for visual readability
+        // strip trailing '.'
+        const bare = line.endsWith('.') ? line.slice(0,-1) : line;
+        const elems = bare.split(', ');
+        elems.forEach((elem, ei) => {
+          const esc = elem.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+          const isLast = ei === elems.length - 1;
+          const suffix = isLast ? '.' : ',';
+          let cls = '';
+          if (ei === 0) cls = 'ph'; // first = shot header
+          else if (elem.startsWith('Sound:') || elem.startsWith('"')) cls = 'pa';
+          else if (atmVals.includes(elem)) cls = 'patm';
+          if (cls) {
+            html += `<span class="${cls}">${esc}${suffix}</span>\n`;
+          } else {
+            html += `${esc}${suffix}\n`;
+          }
+        });
+      }
+    });
     box.innerHTML = html;
   }
-  document.getElementById('statLines').textContent    = lineCount;
+  document.getElementById('statLines').textContent    = partCount;
   document.getElementById('statChars').textContent    = prompt.length;
   document.getElementById('statSections').textContent = sections;
   const pct = Math.round((sections/6)*100);
@@ -1067,119 +1463,133 @@ function rnd(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 function maybe(arr, prob) { return Math.random() < prob ? rnd(arr).v : null; }
 
 function runShuffle() {
-  // dice spin animation
   const dice = document.getElementById('shuffleDice');
   const btn  = document.getElementById('btnShuffleBig');
   btn.classList.add('spinning');
   setTimeout(() => btn.classList.remove('spinning'), 420);
-  const faces = ['⚀','⚁','⚂','⚃','⚄','⚅'];
-  dice.textContent = rnd(faces);
+  dice.textContent = pickV(['⚀','⚁','⚂','⚃','⚄','⚅']);
 
-  const lines = [];
-  const tags  = [];
+  const comments = [];
+  const parts    = [];
+  const tags     = [];
 
-  // 1. Shot + genre (always) + maybe style
+  // 1. Shot + genre + maybe style
   const shot  = rnd(SELECTS.shotType).v;
   const genre = rnd(SELECTS.shotGenre).v;
   const style = maybe(CHIPS.styleChips, 0.4);
-  const shotLine = [shot, genre, style].filter(Boolean).join(' - ');
-  lines.push(shotLine);
+  const shotStr = [shot, genre, style].filter(Boolean).join(' - ');
   tags.push({text: shot, cls:'stag-shot'});
   tags.push({text: genre, cls:'stag-shot'});
 
-  // 2. Setting — pick 2-4 scene elements
+  // 2. Setting
   const lighting = rnd(SELECTS.lighting).v;
-  lines.push(lighting);
   const location = rnd(SELECTS.location).v;
-  lines.push(location);
   tags.push({text: location, cls:'stag-scene'});
-  if (Math.random() < 0.6) {
-    lines.push(rnd(SELECTS.timeOfDay).v);
-  }
-  if (Math.random() < 0.5) {
-    lines.push(rnd(CHIPS.atmosphereChips).v);
-  }
-  if (Math.random() < 0.35) {
-    lines.push(rnd(SELECTS.colorPalette).v);
-  }
+  const timeOD   = Math.random() < 0.6 ? rnd(SELECTS.timeOfDay).v : null;
+  const atmItem  = Math.random() < 0.5 ? rnd(CHIPS.atmosphereChips).v : null;
+  const colItem  = Math.random() < 0.35 ? rnd(SELECTS.colorPalette).v : null;
+  const lightStr = [lighting, colItem, timeOD].filter(Boolean).join(', ');
+  const atmStr   = atmItem ? ', ' + atmItem : '';
 
-  // 3. Action — maybe pacing + 1-3 random action cards
-  if (Math.random() < 0.4) {
-    lines.push(rnd(CHIPS.pacingChips).v);
-  }
-  const allCards = ACTION_CARDS.flatMap(g => g.cards);
-  // pick opening card from first category
+  // Build opening sentence with one of many structures
+  const openTemplates = [
+    () => `${pickV(SHOT_OPENS)(shotStr, location, lightStr)}${atmStr}`,
+    () => `${shotStr}, ${location}, ${lightStr}${atmStr}`,
+    () => `A ${genre.toLowerCase()} ${shot.toLowerCase()} — ${location} at ${timeOD||lighting}${atmStr}`,
+    () => `${location}, ${shotStr}, lit by ${lighting}${atmStr}`,
+    () => `${shot.toLowerCase()} — ${location}, ${lightStr}${atmStr}`,
+  ];
+  parts.push(pickV(openTemplates)());
+
+  // 3. Action — pacing → # comment; actions → inline
+  if (Math.random() < 0.4) comments.push(rnd(CHIPS.pacingChips).v);
+
+  // Action sentence openers (varied)
   const opening = rnd(ACTION_CARDS[0].cards);
-  lines.push(opening.v);
-  // 1-2 more random cards from other categories
+  const actionOpeners = [
+    () => opening.v,
+    () => opening.v.replace('The shot opens on', 'We find').replace('We open on', 'The frame reveals'),
+    () => opening.v,
+  ];
+  parts.push(pickV(actionOpeners)());
+
   const extraCount = Math.random() < 0.5 ? 1 : 2;
   const shuffledCats = ACTION_CARDS.slice(1).sort(() => Math.random()-.5);
-  for (let i = 0; i < extraCount; i++) {
+  for (let i=0; i<extraCount; i++) {
     const card = rnd(shuffledCats[i].cards);
-    lines.push(card.v);
+    parts.push(card.v);
     tags.push({text: card[currentLang]||card.en, cls:'stag-action'});
   }
 
-  // 4. Maybe a character
+  // 4. Maybe character — varied phrasing
   if (Math.random() < 0.55) {
-    lines.push(rnd(SELECTS.charOptions).v);
+    const char = rnd(SELECTS.charOptions).v;
+    const charPhrases = [
+      char,
+      `featuring ${char}`,
+      char,
+    ];
+    parts.push(pickV(charPhrases));
   }
 
-  // 5. Camera
+  // 5. Camera — varied phrasing
   const cam = rnd(SELECTS.cameraMove).v;
-  lines.push(cam);
+  parts.push(pickV(CAM_JOINS)(cam));
   tags.push({text: cam, cls:'stag-camera'});
-  if (Math.random() < 0.4) {
-    lines.push(rnd(SELECTS.focus).v);
-  }
+  if (Math.random() < 0.4) parts.push(rnd(SELECTS.focus).v);
 
-  // 6. Audio — always ambient, maybe dialogue
+  // 6. Audio
   const ambient = rnd(SELECTS.ambient).v;
   if (ambient !== 'Silence') {
-    lines.push(`Sound: ${ambient}`);
+    parts.push(pickV(AUDIO_JOINS)(ambient));
     tags.push({text: ambient, cls:'stag-audio'});
   }
-  if (Math.random() < 0.3) {
-    lines.push(`"${rnd(SELECTS.dialogue).v}"`);
-  }
+  if (Math.random() < 0.3) parts.push(`"${rnd(SELECTS.dialogue).v}"`);
 
-  const prompt = lines.join('\n') + '.';
+  // Build final prompt: ONE line = 1 video in Wan2GP
+  const mainLine = parts.join(', ') + '.';
+  const allLines = [...comments, mainLine].filter(Boolean);
+  const prompt   = allLines.join('\n');
+
   lastShufflePrompt = prompt;
   shuffleCount++;
 
-  // render
+  // Render in shuffle box — visually split by ', ' for readability
   const box = document.getElementById('shufflePromptBox');
-  // highlight lines like preview
-  const html = lines.map((line, i) => {
-    const esc = line.replace(/&/g,'&amp;').replace(/</g,'&lt;');
-    if (line.startsWith('#')) return `<span class="pc">${esc}</span>`;
-    if (line.startsWith('Sound:')||line.startsWith('"')) return `<span class="pa">${esc}</span>`;
-    if (i === 0) return `<span class="ph">${esc}</span>`;
-    return esc;
-  }).join('\n');
+  let html = '';
+  allLines.forEach(line => {
+    if (line.startsWith('#')) {
+      const esc = line.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+      html += `<span class="pc">${esc}</span>\n`;
+    } else {
+      const bare = line.endsWith('.') ? line.slice(0,-1) : line;
+      bare.split(', ').forEach((elem, ei, arr) => {
+        const esc = elem.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+        const suffix = ei === arr.length - 1 ? '.' : ',';
+        let cls = '';
+        if (ei === 0) cls = 'ph';
+        else if (elem.startsWith('"')) cls = 'pa';
+        else if (/sound|ambient|background:/i.test(elem)) cls = 'pa';
+        if (cls) html += `<span class="${cls}">${esc}${suffix}</span>\n`;
+        else html += `${esc}${suffix}\n`;
+      });
+    }
+  });
 
-  // remove old content except copy hint
-  const hint = box.querySelector('.shuffle-copy-hint');
   box.innerHTML = html;
-  const newHint = document.createElement('span');
-  newHint.className = 'shuffle-copy-hint';
-  newHint.setAttribute('data-t','shuffleCopyHint');
-  newHint.textContent = T[currentLang].shuffleCopyHint;
-  box.appendChild(newHint);
+  const hint = document.createElement('span');
+  hint.className = 'shuffle-copy-hint';
+  hint.setAttribute('data-t','shuffleCopyHint');
+  hint.textContent = T[currentLang].shuffleCopyHint;
+  box.appendChild(hint);
 
-  // tags
-  const tagsEl = document.getElementById('shuffleTags');
-  tagsEl.innerHTML = tags.map(t=>`<span class="shuffle-tag ${t.cls}">${t.text}</span>`).join('');
-
-  // counter
+  document.getElementById('shuffleTags').innerHTML =
+    tags.map(t=>`<span class="shuffle-tag ${t.cls}">${t.text}</span>`).join('');
   document.getElementById('shuffleCounter').textContent =
     T[currentLang].shuffleCounterTpl.replace('%n', shuffleCount);
 
-  // show result
   const result = document.getElementById('shuffleResult');
   result.classList.add('visible');
-
-  // trigger re-animation
   box.style.animation = 'none';
   void box.offsetWidth;
   box.style.animation = '';
@@ -1192,6 +1602,216 @@ function copyShufflePrompt() {
 }
 
 // ═══════════════════════════════════════════
+//  RACCOLTA PROMPT — in-memory collection
+// ═══════════════════════════════════════════
+let promptCollection = [];   // [{id, text, stars, fav, note, date, source}]
+let collCurrentFilter = 'all';
+let collCurrentSort   = 'newest';
+let collIdCounter = 0;
+
+function collSaveCurrentPrompt() {
+  const text = generatePrompt();
+  if (!text || !text.trim()) return;
+  collAddEntry(text, 'builder');
+  showToast(T[currentLang].toastCollSaved);
+  // Flash the tab
+  const tab = document.getElementById('tab-collection');
+  tab.style.color = 'var(--amber)';
+  setTimeout(() => tab.style.color = '', 800);
+}
+
+function collAddEntry(text, source='manual') {
+  const now = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  const dateStr = `${pad(now.getDate())}/${pad(now.getMonth()+1)} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  const entry = {
+    id: ++collIdCounter,
+    text: text.trim(),
+    stars: 0,
+    fav: false,
+    note: '',
+    date: dateStr,
+    source,
+  };
+  promptCollection.unshift(entry);
+  collRender();
+  return entry;
+}
+
+function collFilter(f) {
+  collCurrentFilter = f;
+  document.querySelectorAll('.coll-filter-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('filt-' + f);
+  if (btn) btn.classList.add('active');
+  collRender();
+}
+
+function collSort(s) {
+  collCurrentSort = s;
+  collRender();
+}
+
+function collGetFiltered() {
+  let list = [...promptCollection];
+  if (collCurrentFilter === 'fav')   list = list.filter(e => e.fav);
+  if (collCurrentFilter === 'noted') list = list.filter(e => e.note.trim());
+  if (collCurrentFilter === '5')     list = list.filter(e => e.stars === 5);
+  if (collCurrentFilter === '4')     list = list.filter(e => e.stars === 4);
+  if (collCurrentSort === 'oldest')  list = list.reverse();
+  if (collCurrentSort === 'stars')   list = list.sort((a,b) => b.stars - a.stars);
+  return list;
+}
+
+function collRender() {
+  const list = document.getElementById('collectionList');
+  const t = T[currentLang];
+  document.getElementById('collCount').textContent = promptCollection.length;
+
+  const filtered = collGetFiltered();
+  if (!filtered.length) {
+    const msg = promptCollection.length
+      ? 'Nessun prompt corrisponde al filtro selezionato.'
+      : 'Nessun prompt ancora.<br><span class="coll-empty-hint">Usa il bottone verde SALVA IN RACCOLTA</span>';
+    list.innerHTML = `<div class="coll-empty"><div class="coll-empty-icon">📋</div><div>${msg}</div></div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map((entry, idx) => {
+    const stars = [1,2,3,4,5].map(n =>
+      `<button class="star-btn ${entry.stars >= n ? 'lit' : ''}" onclick="collSetStars(${entry.id},${n})">★</button>`
+    ).join('');
+    const preview = entry.text.replace(/\n/g,' ').substring(0,55) + (entry.text.length > 55 ? '…' : '');
+    const firstWord = entry.text.split(',')[0].substring(0,32);
+    const srcLabel = entry.source === 'shuffle' ? '🎲 shuffle' : entry.source === 'import' ? '↓ import' : '⬡ builder';
+    const srcCls   = entry.source === 'shuffle' ? 'src-shuffle' : entry.source === 'import' ? 'src-import' : 'src-builder';
+    return `<div class="coll-card" id="ccard-${entry.id}">
+      <div class="coll-card-header" onclick="collToggle(${entry.id})">
+        <div class="coll-card-index">${String(idx+1).padStart(2,'0')}</div>
+        <div class="coll-card-meta">
+          <div class="coll-card-date">${entry.date} &nbsp;·&nbsp; <span class="coll-source-badge ${srcCls}">${srcLabel}</span></div>
+          <div class="coll-card-preview"><strong>${firstWord.replace(/</g,'&lt;')}</strong>${preview.substring(firstWord.length).replace(/</g,'&lt;')}</div>
+        </div>
+        <div class="coll-card-right">
+          <div class="coll-stars">${stars}</div>
+          <button class="fav-btn ${entry.fav?'lit':''}" onclick="event.stopPropagation();collToggleFav(${entry.id})">${entry.fav?'♥':'♡'}</button>
+          <span class="coll-chevron">▾</span>
+        </div>
+      </div>
+      <div class="coll-card-body">
+        <div class="coll-body-inner">
+          <div class="coll-prompt-text">${entry.text.replace(/</g,'&lt;')}</div>
+          <div class="coll-card-btns">
+            <button class="ccbtn ccbtn-copy" onclick="collCopyEntry(${entry.id})">
+              📋 <span data-t="collCardCopy">${t.collCardCopy||'Copia'}</span>
+            </button>
+            <button class="ccbtn ccbtn-del" onclick="collDelete(${entry.id})">
+              🗑 <span data-t="collCardDel">${t.collCardDel||'Elimina'}</span>
+            </button>
+          </div>
+          <textarea class="coll-note-area" placeholder="${t.collNotePlaceholder||'Note...'}"
+            oninput="collSaveNote(${entry.id},this.value)">${entry.note}</textarea>
+          <div class="coll-video-section">
+            <div class="coll-video-label">🎬 VIDEO GENERATO <span class="wip-badge">WIP</span></div>
+            <div class="coll-video-placeholder">Caricamento video — funzione in arrivo</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function collToggle(id) {
+  const card = document.getElementById('ccard-' + id);
+  if (card) card.classList.toggle('expanded');
+}
+
+function collSetStars(id, n) {
+  const entry = promptCollection.find(e => e.id === id);
+  if (!entry) return;
+  // Click same star again = reset to 0
+  entry.stars = entry.stars === n ? 0 : n;
+  collRender();
+  // Re-expand if was expanded
+}
+
+function collToggleFav(id) {
+  const entry = promptCollection.find(e => e.id === id);
+  if (entry) { entry.fav = !entry.fav; collRender(); }
+}
+
+function collSaveNote(id, val) {
+  const entry = promptCollection.find(e => e.id === id);
+  if (entry) entry.note = val;
+}
+
+function collCopyEntry(id) {
+  const entry = promptCollection.find(e => e.id === id);
+  if (!entry) return;
+  navigator.clipboard.writeText(entry.text)
+    .then(() => showToast(T[currentLang].toastCopied));
+}
+
+function collDelete(id) {
+  promptCollection = promptCollection.filter(e => e.id !== id);
+  collRender();
+}
+
+function collClearAll() {
+  if (!promptCollection.length) return;
+  if (!confirm('Svuotare tutta la raccolta?')) return;
+  promptCollection = [];
+  collIdCounter = 0;
+  collRender();
+  showToast(T[currentLang].toastCollCleared);
+}
+
+function collExportAll() {
+  if (!promptCollection.length) return;
+  const lines = [];
+  const filtered = collGetFiltered();
+  filtered.forEach((entry, idx) => {
+    lines.push(`# [${idx+1}] ${entry.date} | ${'★'.repeat(entry.stars) || '—'} | ${entry.fav ? '♥' : ''}`);
+    if (entry.note.trim()) lines.push(`# note: ${entry.note.trim()}`);
+    lines.push(entry.text);
+    lines.push('');
+  });
+  const blob = new Blob([lines.join('\n')], {type:'text/plain'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = `ltx-raccolta-${Date.now()}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast(T[currentLang].toastCollExported);
+}
+
+// Salva prompt importato
+function collSaveImportPrompt() {
+  const text = document.getElementById('importText').value.trim();
+  if (!text) return;
+  collAddEntry(text, 'import');
+  showToast(T[currentLang].toastCollSaved);
+  showTab('collection');
+}
+
+// Salva prompt shuffle
+function collSaveShufflePrompt() {
+  if (!lastShufflePrompt) return;
+  collAddEntry(lastShufflePrompt, 'shuffle');
+  showToast(T[currentLang].toastCollSaved);
+  showTab('collection');
+}
+
+// Auto-save shuffle prompt to collection when copied
+const _origCopyShufflePrompt = copyShufflePrompt;
+function copyShufflePrompt() {
+  _origCopyShufflePrompt();
+  if (lastShufflePrompt) {
+    collAddEntry(lastShufflePrompt, 'shuffle');
+  }
+}
+
+// ═══════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════
 function init() {
@@ -1200,6 +1820,7 @@ function init() {
   renderActionCards();
   renderSequence();
   generatePrompt();
+  collRender();
 }
 init();
 </script>
