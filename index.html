@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LTX Prompt Builder</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0b;
+  --surface: #111113;
+  --panel: #18181c;
+  --panel2: #1e1e23;
+  --border: #252530;
+  --border-bright: #383845;
+  --amber: #f59e0b;
+  --amber-dim: #92600a;
+  --amber-glow: rgba(245,158,11,.1);
+  --cyan: #22d3ee;
+  --cyan-dim: #0e7490;
+  --red: #ef4444;
+  --green: #22c55e;
+  --text: #e2e2ee;
+  --text-muted: #64647a;
+  --text-dim: #3a3a4a;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'DM Sans', sans-serif;
+  --display: 'Bebas Neue', sans-serif;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:var(--sans); background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; }
+body::before {
+  content:''; position:fixed; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none; z-index:9999; opacity:.6;
+}
+
+/* TOPBAR */
+.topbar {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:13px 28px; border-bottom:1px solid var(--border);
+  background:var(--surface); position:sticky; top:0; z-index:100;
+}
+.logo { display:flex; align-items:baseline; gap:10px; }
+.logo-main { font-family:var(--display); font-size:1.75rem; letter-spacing:.06em; color:var(--amber); line-height:1; }
+.logo-badge { font-family:var(--mono); font-size:.6rem; letter-spacing:.18em; color:var(--text-muted); text-transform:uppercase; padding:3px 7px; border:1px solid var(--border-bright); border-radius:3px; }
+.topbar-right { display:flex; align-items:center; gap:14px; }
+.rec { display:flex; align-items:center; gap:6px; }
+.rec-dot { width:7px; height:7px; background:var(--red); border-radius:50%; box-shadow:0 0 7px var(--red); animation:blink 2.5s ease-in-out infinite; }
+.rec-label { font-family:var(--mono); font-size:.6rem; letter-spacing:.15em; color:var(--text-muted); }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+.lang-toggle { display:flex; background:var(--panel); border:1px solid var(--border); border-radius:5px; overflow:hidden; }
+.lang-btn { padding:6px 15px; background:transparent; border:none; color:var(--text-muted); font-family:var(--mono); font-size:.72rem; font-weight:600; letter-spacing:.1em; cursor:pointer; transition:all .2s; }
+.lang-btn.active { background:var(--amber); color:#000; }
+.lang-btn:not(.active):hover { color:var(--text); }
+
+/* WORKSPACE */
+.workspace { display:grid; grid-template-columns:1fr 390px; height:calc(100vh - 52px); }
+@media(max-width:1080px){ .workspace { grid-template-columns:1fr; height:auto; } .sidebar { position:static; height:auto; min-height:500px; } }
+
+/* BUILDER PANEL */
+.builder-panel { overflow-y:auto; border-right:1px solid var(--border); }
+.builder-panel::-webkit-scrollbar { width:3px; }
+.builder-panel::-webkit-scrollbar-thumb { background:var(--border-bright); border-radius:4px; }
+
+.tabs-bar { display:flex; border-bottom:1px solid var(--border); background:var(--surface); position:sticky; top:0; z-index:10; }
+.tab-btn { padding:13px 24px; background:transparent; border:none; border-bottom:2px solid transparent; color:var(--text-muted); font-family:var(--sans); font-size:.83rem; font-weight:500; cursor:pointer; transition:all .2s; letter-spacing:.02em; }
+.tab-btn.active { color:var(--amber); border-bottom-color:var(--amber); }
+.tab-btn:not(.active):hover { color:var(--text); }
+
+.tab-pane { display:none; padding:26px 28px; }
+.tab-pane.active { display:block; }
+
+.section { margin-bottom:30px; padding-bottom:30px; border-bottom:1px solid var(--border); }
+.section:last-child { border:none; margin-bottom:0; }
+.section-label { display:flex; align-items:center; gap:10px; margin-bottom:18px; }
+.section-num { font-family:var(--mono); font-size:.62rem; color:var(--amber); background:var(--amber-glow); border:1px solid var(--amber-dim); padding:3px 7px; border-radius:3px; letter-spacing:.1em; flex-shrink:0; }
+.section-title { font-family:var(--display); font-size:1.05rem; letter-spacing:.08em; color:var(--text); }
+
+.field-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+.field { display:flex; flex-direction:column; gap:5px; }
+.field-label { font-family:var(--mono); font-size:.65rem; letter-spacing:.13em; text-transform:uppercase; color:var(--text-muted); }
+
+select {
+  appearance:none; background:var(--panel); border:1px solid var(--border); border-radius:6px;
+  color:var(--text); font-family:var(--sans); font-size:.88rem; padding:9px 32px 9px 13px;
+  cursor:pointer; transition:border-color .2s, box-shadow .2s;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%2364647a' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 10px center; width:100%;
+}
+select:focus { outline:none; border-color:var(--amber); box-shadow:0 0 0 3px var(--amber-glow); }
+select option { background:var(--panel); }
+
+/* CHIPS */
+.chips { display:flex; flex-wrap:wrap; gap:7px; }
+.chip { display:flex; align-items:center; gap:6px; padding:6px 13px; background:var(--panel); border:1px solid var(--border); border-radius:20px; cursor:pointer; transition:all .18s; font-size:.8rem; color:var(--text-muted); user-select:none; }
+.chip:hover { border-color:var(--border-bright); color:var(--text); }
+.chip input[type=checkbox] { display:none; }
+.chip.checked { border-color:var(--amber); background:var(--amber-glow); color:var(--amber); }
+.chip-dot { width:5px; height:5px; border:1.5px solid currentColor; border-radius:50%; flex-shrink:0; transition:all .18s; }
+.chip.checked .chip-dot { background:var(--amber); border-color:var(--amber); box-shadow:0 0 4px var(--amber); }
+
+/* ACTION CARDS */
+.action-cats { display:flex; flex-direction:column; gap:16px; margin-bottom:16px; }
+.action-cat-hd { font-family:var(--mono); font-size:.6rem; letter-spacing:.18em; text-transform:uppercase; color:var(--text-dim); margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+.action-cat-hd::after { content:''; flex:1; height:1px; background:var(--border); }
+.action-cards-grid { display:flex; flex-wrap:wrap; gap:7px; }
+.acard {
+  padding:7px 13px; background:var(--panel2); border:1px solid var(--border); border-radius:6px;
+  font-family:var(--sans); font-size:.8rem; color:var(--text-muted);
+  cursor:pointer; transition:all .18s; user-select:none;
+  display:flex; align-items:center; gap:6px; position:relative; overflow:hidden;
+}
+.acard::before { content:''; position:absolute; inset:0; background:var(--amber-glow); opacity:0; transition:opacity .18s; }
+.acard:hover { border-color:var(--amber-dim); color:var(--text); }
+.acard:hover::before { opacity:1; }
+.acard:active { transform:scale(.97); }
+@keyframes cardPulse { 0%{box-shadow:0 0 0 0 rgba(245,158,11,.5)} 70%{box-shadow:0 0 0 8px rgba(245,158,11,0)} 100%{box-shadow:0 0 0 0 rgba(245,158,11,0)} }
+.acard.pulse { animation:cardPulse .45s ease; }
+
+/* SEQUENCE */
+.sequence-wrap { margin-top:16px; }
+.sequence-hd { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.seq-clear { background:transparent; border:1px solid var(--border); color:var(--text-dim); font-family:var(--mono); font-size:.62rem; letter-spacing:.1em; padding:4px 10px; border-radius:4px; cursor:pointer; transition:all .18s; }
+.seq-clear:hover { border-color:var(--red); color:var(--red); }
+.sequence-list { display:flex; flex-direction:column; gap:5px; min-height:40px; }
+.seq-empty { font-family:var(--mono); font-size:.75rem; color:var(--text-dim); font-style:italic; padding:10px 0; }
+.seq-item { display:flex; align-items:center; gap:10px; background:var(--panel); border:1px solid var(--border); border-left:3px solid var(--amber-dim); border-radius:6px; padding:9px 12px; animation:slideIn .2s ease; }
+@keyframes slideIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:none} }
+.seq-num { font-family:var(--mono); font-size:.6rem; color:var(--amber-dim); min-width:18px; }
+.seq-text { font-family:var(--mono); font-size:.78rem; color:var(--text); flex:1; }
+.seq-remove { background:transparent; border:none; color:var(--text-dim); cursor:pointer; font-size:.85rem; padding:2px 6px; border-radius:3px; transition:all .15s; flex-shrink:0; }
+.seq-remove:hover { color:var(--red); background:rgba(239,68,68,.1); }
+
+/* CHAR FIELDS */
+.char-fields { display:flex; flex-direction:column; gap:9px; margin-top:10px; }
+.char-field { display:flex; align-items:center; gap:10px; }
+.char-num { font-family:var(--mono); font-size:.65rem; color:var(--amber-dim); min-width:22px; }
+
+/* SIDEBAR */
+.sidebar { display:flex; flex-direction:column; background:var(--surface); position:sticky; top:0; height:calc(100vh - 52px); overflow:hidden; }
+.sidebar-header { padding:18px 22px 14px; border-bottom:1px solid var(--border); flex-shrink:0; }
+.sidebar-title { font-family:var(--mono); font-size:.6rem; letter-spacing:.2em; text-transform:uppercase; color:var(--text-muted); margin-bottom:12px; }
+.progress-wrap { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.progress-track { flex:1; height:2px; background:var(--panel); border-radius:4px; overflow:hidden; }
+.progress-fill { height:100%; background:linear-gradient(90deg, var(--amber-dim), var(--amber)); border-radius:4px; transition:width .4s cubic-bezier(.4,0,.2,1); box-shadow:0 0 6px var(--amber); }
+.progress-text { font-family:var(--mono); font-size:.68rem; color:var(--amber); min-width:28px; text-align:right; }
+.stats-row { display:flex; gap:18px; }
+.stat { display:flex; flex-direction:column; gap:2px; }
+.stat-val { font-family:var(--mono); font-size:1rem; color:var(--text); font-weight:600; }
+.stat-key { font-family:var(--mono); font-size:.58rem; letter-spacing:.15em; text-transform:uppercase; color:var(--text-dim); }
+
+.preview-box-wrap { flex:1; overflow:hidden; position:relative; border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+.preview-box { height:100%; overflow-y:auto; padding:20px 22px; font-family:var(--mono); font-size:.8rem; line-height:2.1; color:var(--text-muted); white-space:pre-wrap; word-break:break-word; }
+.preview-box.has-content { color:var(--text); }
+.preview-box::-webkit-scrollbar { width:3px; }
+.preview-box::-webkit-scrollbar-thumb { background:var(--border); }
+.ph { color:var(--amber); }
+.pc { color:var(--text-dim); font-style:italic; }
+.pa { color:var(--green); }
+.patm { color:var(--cyan); }
+
+.sidebar-footer { padding:14px 22px; border-top:1px solid var(--border); display:flex; flex-direction:column; gap:8px; flex-shrink:0; }
+.btn-row { display:flex; gap:7px; }
+.btn { flex:1; padding:10px 14px; border:none; border-radius:6px; font-family:var(--sans); font-size:.8rem; font-weight:600; cursor:pointer; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:6px; letter-spacing:.02em; }
+.btn-primary { background:var(--amber); color:#000; }
+.btn-primary:hover { background:#fbbf24; box-shadow:0 0 18px rgba(245,158,11,.35); }
+.btn-ghost { background:var(--panel); color:var(--text-muted); border:1px solid var(--border); }
+.btn-ghost:hover { color:var(--text); border-color:var(--border-bright); }
+.btn-save { background:transparent; color:var(--cyan); border:1px solid var(--cyan-dim); width:100%; }
+.btn-save:hover { background:rgba(34,211,238,.07); }
+
+/* IMPORT */
+.import-area { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:14px; font-family:var(--mono); font-size:.82rem; color:var(--text); width:100%; height:180px; resize:vertical; outline:none; transition:border-color .2s; }
+.import-area:focus { border-color:var(--amber); }
+.btn-variants { background:transparent; color:var(--amber); border:1px solid var(--amber-dim); width:100%; margin-top:12px; flex:none; }
+.btn-variants:hover { background:var(--amber-glow); }
+.variants-grid { display:flex; flex-direction:column; gap:10px; margin-top:18px; }
+.variant-card { background:var(--panel); border:1px solid var(--border); border-radius:7px; padding:14px 16px; font-family:var(--mono); font-size:.76rem; color:var(--text-muted); white-space:pre-wrap; line-height:1.9; cursor:pointer; transition:all .2s; position:relative; }
+.variant-card:hover { border-color:var(--amber-dim); color:var(--text); }
+.variant-num { position:absolute; top:9px; right:11px; font-size:.62rem; color:var(--amber-dim); font-family:var(--mono); }
+
+/* SHUFFLE */
+.shuffle-hero {
+  display:flex; flex-direction:column; align-items:center;
+  padding:32px 0 28px; border-bottom:1px solid var(--border); margin-bottom:28px;
+}
+.shuffle-title {
+  font-family:var(--display); font-size:1.05rem; letter-spacing:.1em;
+  color:var(--text-muted); margin-bottom:24px; text-align:center;
+  text-transform:uppercase;
+}
+.btn-shuffle-big {
+  position:relative; display:flex; align-items:center; justify-content:center;
+  gap:12px; width:100%; max-width:340px;
+  padding:18px 32px; border:none; border-radius:10px;
+  background:linear-gradient(135deg, #92600a 0%, var(--amber) 60%, #fbbf24 100%);
+  color:#000; font-family:var(--display); font-size:1.5rem; letter-spacing:.1em;
+  cursor:pointer; transition:all .25s; overflow:hidden;
+}
+.btn-shuffle-big::before {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(135deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.15) 50%, rgba(255,255,255,0) 100%);
+  transform:translateX(-100%); transition:transform .5s;
+}
+.btn-shuffle-big:hover::before { transform:translateX(100%); }
+.btn-shuffle-big:hover { box-shadow:0 0 32px rgba(245,158,11,.5), 0 0 8px rgba(245,158,11,.3); transform:translateY(-1px); }
+.btn-shuffle-big:active { transform:scale(.98) translateY(0); }
+.shuffle-dice {
+  font-size:1.6rem; line-height:1;
+  animation:none;
+}
+.spinning .shuffle-dice { animation:spinDice .4s ease; }
+@keyframes spinDice {
+  0%{transform:rotate(0) scale(1)} 40%{transform:rotate(180deg) scale(1.3)} 100%{transform:rotate(360deg) scale(1)}
+}
+.shuffle-hint {
+  font-family:var(--mono); font-size:.65rem; color:var(--text-dim);
+  letter-spacing:.12em; margin-top:14px; text-transform:uppercase;
+}
+
+/* shuffle result */
+.shuffle-result {
+  display:none; flex-direction:column; gap:10px;
+}
+.shuffle-result.visible { display:flex; }
+.shuffle-result-label {
+  font-family:var(--mono); font-size:.62rem; letter-spacing:.18em;
+  text-transform:uppercase; color:var(--text-muted); margin-bottom:2px;
+}
+.shuffle-prompt-box {
+  background:var(--panel); border:1px solid var(--border);
+  border-radius:8px; padding:20px 22px;
+  font-family:var(--mono); font-size:.82rem; line-height:2;
+  white-space:pre-wrap; color:var(--text);
+  cursor:pointer; transition:all .25s; position:relative;
+  animation:shuffleIn .35s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes shuffleIn {
+  0%{opacity:0;transform:scale(.96) translateY(8px)} 100%{opacity:1;transform:none}
+}
+.shuffle-prompt-box:hover { border-color:var(--amber-dim); box-shadow:0 0 16px var(--amber-glow); }
+.shuffle-copy-hint {
+  position:absolute; bottom:10px; right:12px;
+  font-family:var(--mono); font-size:.6rem; color:var(--text-dim);
+  letter-spacing:.1em; transition:color .2s;
+}
+.shuffle-prompt-box:hover .shuffle-copy-hint { color:var(--amber); }
+
+.shuffle-tags {
+  display:flex; flex-wrap:wrap; gap:6px;
+}
+.shuffle-tag {
+  font-family:var(--mono); font-size:.68rem; padding:4px 10px;
+  border-radius:4px; letter-spacing:.06em;
+}
+.stag-shot   { background:rgba(245,158,11,.1); color:#f59e0b; border:1px solid rgba(245,158,11,.2); }
+.stag-scene  { background:rgba(34,211,238,.08); color:#22d3ee; border:1px solid rgba(34,211,238,.15); }
+.stag-action { background:rgba(168,85,247,.08); color:#a78bfa; border:1px solid rgba(168,85,247,.15); }
+.stag-camera { background:rgba(34,197,94,.08); color:#22c55e; border:1px solid rgba(34,197,94,.15); }
+.stag-audio  { background:rgba(249,115,22,.08); color:#fb923c; border:1px solid rgba(249,115,22,.15); }
+
+.shuffle-again {
+  background:transparent; border:1px solid var(--border); color:var(--text-muted);
+  font-family:var(--mono); font-size:.72rem; letter-spacing:.1em; padding:8px 18px;
+  border-radius:6px; cursor:pointer; transition:all .2s; align-self:center;
+}
+.shuffle-again:hover { border-color:var(--amber-dim); color:var(--amber); }
+
+.shuffle-counter {
+  font-family:var(--mono); font-size:.65rem; color:var(--text-dim);
+  text-align:center; letter-spacing:.12em;
+}
+
+/* TOAST */
+.toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(16px); background:var(--green); color:#fff; font-family:var(--mono); font-size:.76rem; font-weight:600; padding:11px 22px; border-radius:6px; opacity:0; transition:all .28s cubic-bezier(.4,0,.2,1); pointer-events:none; letter-spacing:.05em; z-index:9000; box-shadow:0 4px 18px rgba(34,197,94,.3); }
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">
+    <span class="logo-main">LTX PROMPT</span>
+    <span class="logo-badge">v2.3 BUILDER</span>
+  </div>
+  <div class="topbar-right">
+    <div class="rec"><div class="rec-dot"></div><span class="rec-label" data-t="recLabel">LIVE</span></div>
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="btnIT" onclick="setLanguage('it')">IT</button>
+      <button class="lang-btn" id="btnEN" onclick="setLanguage('en')">EN</button>
+    </div>
+  </div>
+</div>
+
+<div class="workspace">
+  <div class="builder-panel">
+    <div class="tabs-bar">
+      <button class="tab-btn active" id="tab-builder" onclick="showTab('builder')"><span data-t="tabBuilder">⬡ Costruttore</span></button>
+      <button class="tab-btn" id="tab-import" onclick="showTab('import')"><span data-t="tabImport">↓ Importa</span></button>
+      <button class="tab-btn" id="tab-shuffle" onclick="showTab('shuffle')"><span data-t="tabShuffle">⚄ Shuffle</span></button>
+    </div>
+
+    <div class="tab-pane active" id="pane-builder">
+
+      <!-- 01 INQUADRATURA -->
+      <div class="section">
+        <div class="section-label"><span class="section-num">01</span><span class="section-title" data-t="sec1">INQUADRATURA</span></div>
+        <div class="field-row">
+          <div class="field"><div class="field-label" data-t="lblShot">Tipo</div><select id="shotType" onchange="generatePrompt()"></select></div>
+          <div class="field"><div class="field-label" data-t="lblGenre">Genere</div><select id="shotGenre" onchange="generatePrompt()"></select></div>
+        </div>
+        <div class="field"><div class="field-label" data-t="lblStyle">Stile visivo</div><div class="chips" id="styleChips"></div></div>
+      </div>
+
+      <!-- 02 AMBIENTAZIONE -->
+      <div class="section">
+        <div class="section-label"><span class="section-num">02</span><span class="section-title" data-t="sec2">AMBIENTAZIONE</span></div>
+        <div class="field-row">
+          <div class="field"><div class="field-label" data-t="lblLighting">Illuminazione</div><select id="lighting" onchange="generatePrompt()"></select></div>
+          <div class="field"><div class="field-label" data-t="lblColors">Palette</div><select id="colorPalette" onchange="generatePrompt()"></select></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><div class="field-label" data-t="lblLocation">Luogo</div><select id="location" onchange="generatePrompt()"></select></div>
+          <div class="field"><div class="field-label" data-t="lblTime">Orario</div><select id="timeOfDay" onchange="generatePrompt()"></select></div>
+        </div>
+        <div class="field"><div class="field-label" data-t="lblAtmosphere">Atmosfera</div><div class="chips" id="atmosphereChips"></div></div>
+      </div>
+
+      <!-- 03 AZIONE -->
+      <div class="section">
+        <div class="section-label"><span class="section-num">03</span><span class="section-title" data-t="sec3">AZIONE</span></div>
+        <div class="field" style="margin-bottom:16px">
+          <div class="field-label" data-t="lblPacing">Ritmo</div>
+          <div class="chips" id="pacingChips"></div>
+        </div>
+        <div class="action-cats" id="actionCats"></div>
+        <div class="sequence-wrap">
+          <div class="sequence-hd">
+            <div class="field-label" data-t="lblSequence">Sequenza azione</div>
+            <button class="seq-clear" onclick="clearSequence()" data-t="btnClearSeq">Svuota</button>
+          </div>
+          <div class="sequence-list" id="sequenceList"></div>
+        </div>
+      </div>
+
+      <!-- 04 PERSONAGGI -->
+      <div class="section">
+        <div class="section-label"><span class="section-num">04</span><span class="section-title" data-t="sec4">PERSONAGGI</span></div>
+        <div class="field-row">
+          <div class="field">
+            <div class="field-label" data-t="lblCharCount">Numero</div>
+            <select id="charCount" onchange="updateCharFields(); generatePrompt()">
+              <option value="0">0</option><option value="1">1</option>
+              <option value="2">2</option><option value="3">3</option>
+            </select>
+          </div>
+        </div>
+        <div class="char-fields" id="charFields"></div>
+      </div>
+
+      <!-- 05 CAMERA -->
+      <div class="section">
+        <div class="section-label"><span class="section-num">05</span><span class="section-title" data-t="sec5">CAMERA</span></div>
+        <div class="field-row">
+          <div class="field"><div class="field-label" data-t="lblCamera">Movimento</div><select id="cameraMove" onchange="generatePrompt()"></select></div>
+          <div class="field"><div class="field-label" data-t="lblFocus">Fuoco</div><select id="focus" onchange="generatePrompt()"></select></div>
+        </div>
+      </div>
+
+      <!-- 06 AUDIO -->
+      <div class="section">
+        <div class="section-label"><span class="section-num">06</span><span class="section-title" data-t="sec6">AUDIO</span></div>
+        <div class="field-row">
+          <div class="field"><div class="field-label" data-t="lblAmbient">Suoni ambientali</div><select id="ambient" onchange="generatePrompt()"></select></div>
+          <div class="field"><div class="field-label" data-t="lblDialogue">Dialogo</div><select id="dialogue" onchange="generatePrompt()"></select></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SHUFFLE TAB -->
+    <div class="tab-pane" id="pane-shuffle">
+      <div class="shuffle-hero">
+        <div class="shuffle-title" data-t="shuffleTitle">Combinazione casuale</div>
+        <button class="btn-shuffle-big" id="btnShuffleBig" onclick="runShuffle()">
+          <span class="shuffle-dice" id="shuffleDice">⚄</span>
+          <span data-t="btnShuffleBig">SHUFFLE</span>
+        </button>
+        <div class="shuffle-hint" data-t="shuffleHint">ogni click = nuovo prompt unico</div>
+      </div>
+
+      <div class="shuffle-result" id="shuffleResult">
+        <div class="shuffle-result-label" data-t="shuffleResultLabel">Prompt generato — clicca per copiare</div>
+        <div class="shuffle-prompt-box" id="shufflePromptBox" onclick="copyShufflePrompt()">
+          <span class="shuffle-copy-hint" data-t="shuffleCopyHint">click per copiare</span>
+        </div>
+        <div class="shuffle-tags" id="shuffleTags"></div>
+        <button class="shuffle-again" onclick="runShuffle()" data-t="btnShuffleAgain">↻ ancora</button>
+        <div class="shuffle-counter" id="shuffleCounter"></div>
+      </div>
+    </div>
+
+    <!-- IMPORT TAB -->
+    <div class="tab-pane" id="pane-import">
+      <div class="section">
+        <div class="section-label"><span class="section-num">↓</span><span class="section-title" data-t="importTitle">IMPORTA PROMPT</span></div>
+        <div class="field">
+          <div class="field-label" data-t="lblImportArea">Incolla prompt esistente</div>
+          <textarea class="import-area" id="importText" placeholder="Wide establishing shot - Cinematic&#10;Urban street&#10;Night time&#10;The camera pans left."></textarea>
+        </div>
+        <button class="btn btn-variants" onclick="generateVariants()"><span>✦</span><span data-t="btnVariants"> Genera 5 Varianti</span></button>
+      </div>
+      <div class="variants-grid" id="variantsGrid"></div>
+    </div>
+
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title" data-t="previewTitle">OUTPUT PREVIEW</div>
+      <div class="progress-wrap">
+        <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+        <div class="progress-text" id="progressText">0/6</div>
+      </div>
+      <div class="stats-row">
+        <div class="stat"><div class="stat-val" id="statLines">0</div><div class="stat-key" data-t="statLines">RIGHE</div></div>
+        <div class="stat"><div class="stat-val" id="statChars">0</div><div class="stat-key" data-t="statChars">CARATTERI</div></div>
+        <div class="stat"><div class="stat-val" id="statSections">0</div><div class="stat-key" data-t="statSections">SEZIONI</div></div>
+      </div>
+    </div>
+    <div class="preview-box-wrap"><div class="preview-box" id="previewBox"></div></div>
+    <div class="sidebar-footer">
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="copyPrompt()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          <span data-t="btnCopy">Copia</span>
+        </button>
+        <button class="btn btn-ghost" onclick="resetForm()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          <span data-t="btnReset">Reset</span>
+        </button>
+      </div>
+      <button class="btn btn-save" onclick="saveFile()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span data-t="btnSave">Salva .txt</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════
+//  DATA — value = EN (va nel prompt), it/en = label UI
+// ═══════════════════════════════════════════
+
+const SELECTS = {
+  shotType: [
+    {v:'Wide establishing shot',  it:"Ripresa d'insieme",      en:'Wide establishing shot'},
+    {v:'Medium shot',             it:'Ripresa media',           en:'Medium shot'},
+    {v:'Close-up',                it:'Primo piano',             en:'Close-up'},
+    {v:'Extreme close-up',        it:'Primissimo piano',        en:'Extreme close-up'},
+    {v:'Over-the-shoulder',       it:'Spalla (OTS)',            en:'Over-the-shoulder'},
+    {v:'Overhead view',           it:"Ripresa dall'alto",       en:'Overhead view'},
+    {v:'Static frame',            it:'Inquadratura fissa',      en:'Static frame'},
+    {v:'Dutch angle',             it:'Angolo olandese',         en:'Dutch angle'},
+    {v:'Low angle shot',          it:'Angolazione dal basso',   en:'Low angle shot'},
+    {v:'Tracking shot',           it:'Ripresa in movimento',    en:'Tracking shot'},
+  ],
+  shotGenre: [
+    {v:'Cinematic',   it:'Cinematografico', en:'Cinematic'},
+    {v:'Animation',   it:'Animazione',      en:'Animation'},
+    {v:'Documentary', it:'Documentario',    en:'Documentary'},
+    {v:'Sci-fi',      it:'Fantascienza',    en:'Sci-fi'},
+    {v:'Fantasy',     it:'Fantasy',         en:'Fantasy'},
+    {v:'Horror',      it:'Horror',          en:'Horror'},
+    {v:'Thriller',    it:'Thriller',        en:'Thriller'},
+    {v:'Action',      it:'Azione',          en:'Action'},
+    {v:'Romance',     it:'Romantico',       en:'Romance'},
+    {v:'Western',     it:'Western',         en:'Western'},
+    {v:'Drama',       it:'Drammatico',      en:'Drama'},
+  ],
+  lighting: [
+    {v:'Natural sunlight',    it:'Luce solare naturale',  en:'Natural sunlight'},
+    {v:'Warm morning light',  it:'Luce mattutina calda',  en:'Warm morning light'},
+    {v:'Golden hour',         it:'Ora dorata',             en:'Golden hour'},
+    {v:'Blue hour',           it:'Ora blu',                en:'Blue hour'},
+    {v:'Neon glow',           it:'Bagliore al neon',       en:'Neon glow'},
+    {v:'Flickering candles',  it:'Candele tremolanti',     en:'Flickering candles'},
+    {v:'Dramatic shadows',    it:'Ombre drammatiche',      en:'Dramatic shadows'},
+    {v:'Backlighting',        it:'Controluce',             en:'Backlighting'},
+    {v:'Moonlight',           it:'Luce di luna',           en:'Moonlight'},
+    {v:'Fluorescent light',   it:'Luce fluorescente',      en:'Fluorescent light'},
+    {v:'Overcast sky',        it:'Cielo coperto',          en:'Overcast sky'},
+  ],
+  colorPalette: [
+    {v:'Vibrant',         it:'Vivace',           en:'Vibrant'},
+    {v:'Muted',           it:'Spento',            en:'Muted'},
+    {v:'Monochromatic',   it:'Monocromatico',     en:'Monochromatic'},
+    {v:'High contrast',   it:'Alto contrasto',    en:'High contrast'},
+    {v:'Warm tones',      it:'Toni caldi',        en:'Warm tones'},
+    {v:'Cool tones',      it:'Toni freddi',       en:'Cool tones'},
+    {v:'Desaturated',     it:'Desaturato',        en:'Desaturated'},
+    {v:'Technicolor',     it:'Technicolor',       en:'Technicolor'},
+    {v:'Sepia',           it:'Seppia',            en:'Sepia'},
+  ],
+  location: [
+    {v:'Urban street',       it:'Strada urbana',          en:'Urban street'},
+    {v:'Indoor room',        it:'Interno',                 en:'Indoor room'},
+    {v:'Forest',             it:'Foresta',                 en:'Forest'},
+    {v:'Desert',             it:'Deserto',                 en:'Desert'},
+    {v:'Beach',              it:'Spiaggia',                en:'Beach'},
+    {v:'Mountains',          it:'Montagne',                en:'Mountains'},
+    {v:'Office',             it:'Ufficio',                 en:'Office'},
+    {v:'Restaurant',         it:'Ristorante',              en:'Restaurant'},
+    {v:'Rooftop',            it:'Terrazza sul tetto',      en:'Rooftop'},
+    {v:'Underground',        it:'Sotterraneo',             en:'Underground'},
+    {v:'Space station',      it:'Stazione spaziale',       en:'Space station'},
+    {v:'Abandoned building', it:'Edificio abbandonato',    en:'Abandoned building'},
+    {v:'Train station',      it:'Stazione ferroviaria',    en:'Train station'},
+    {v:'Church',             it:'Chiesa',                  en:'Church'},
+  ],
+  timeOfDay: [
+    {v:'Dawn',       it:'Alba',          en:'Dawn'},
+    {v:'Morning',    it:'Mattina',       en:'Morning'},
+    {v:'Midday',     it:'Mezzogiorno',   en:'Midday'},
+    {v:'Afternoon',  it:'Pomeriggio',    en:'Afternoon'},
+    {v:'Dusk',       it:'Crepuscolo',    en:'Dusk'},
+    {v:'Night time', it:'Notte',         en:'Night time'},
+    {v:'Midnight',   it:'Mezzanotte',    en:'Midnight'},
+  ],
+  cameraMove: [
+    {v:'The camera pans right',  it:'Panoramica a destra',         en:'Pan right'},
+    {v:'The camera pans left',   it:'Panoramica a sinistra',       en:'Pan left'},
+    {v:'The camera pushes in',   it:'Avanzamento verso il soggetto', en:'Push in'},
+    {v:'The camera pulls back',  it:"Arretramento all'indietro",   en:'Pull back'},
+    {v:'The camera tilts up',    it:"Inclinazione verso l'alto",   en:'Tilt up'},
+    {v:'The camera tilts down',  it:'Inclinazione verso il basso', en:'Tilt down'},
+    {v:'The camera orbits',      it:'Orbita intorno al soggetto',  en:'Orbit'},
+    {v:'The camera follows',     it:'Segue il soggetto',           en:'Follow'},
+    {v:'Static',                 it:'Statica',                      en:'Static'},
+    {v:'Handheld movement',      it:'Tremolìo a mano libera',      en:'Handheld'},
+    {v:'Drone shot',             it:'Ripresa con drone',            en:'Drone shot'},
+  ],
+  focus: [
+    {v:'Sharp focus',                it:'Fuoco nitido',                en:'Sharp focus'},
+    {v:'Shallow depth of field',     it:'Poca profondità di campo',    en:'Shallow depth of field'},
+    {v:'Rack focus',                 it:'Fuoco a scorrimento',         en:'Rack focus'},
+    {v:'Soft focus',                 it:'Fuoco morbido',               en:'Soft focus'},
+    {v:'Deep focus',                 it:'Fuoco profondo',              en:'Deep focus'},
+  ],
+  ambient: [
+    {v:'Silence',        it:'Silenzio',          en:'Silence'},
+    {v:'Wind',           it:'Vento',             en:'Wind'},
+    {v:'Rain',           it:'Pioggia',           en:'Rain'},
+    {v:'City noise',     it:'Rumore di città',   en:'City noise'},
+    {v:'Forest sounds',  it:'Suoni del bosco',   en:'Forest sounds'},
+    {v:'Ocean waves',    it:"Onde dell'oceano",  en:'Ocean waves'},
+    {v:'Crowd murmur',   it:'Brusio di folla',   en:'Crowd murmur'},
+    {v:'Machine hum',    it:'Ronzio meccanico',  en:'Machine hum'},
+    {v:'Thunder',        it:'Tuono',             en:'Thunder'},
+  ],
+  dialogue: [
+    {v:'Hello',         it:'Ciao',           en:'Hello'},
+    {v:'Help!',         it:'Aiuto!',         en:'Help!'},
+    {v:'Go!',           it:'Vai!',           en:'Go!'},
+    {v:'Stop!',         it:'Fermati!',       en:'Stop!'},
+    {v:'I love you',    it:'Ti amo',         en:'I love you'},
+    {v:'Run!',          it:'Corri!',         en:'Run!'},
+    {v:'Wait...',       it:'Aspetta...',     en:'Wait...'},
+    {v:"It's over",     it:'È finita',       en:"It's over"},
+    {v:'No!',           it:'No!',            en:'No!'},
+    {v:'Why?',          it:'Perché?',        en:'Why?'},
+    {v:'Come with me',  it:'Vieni con me',   en:'Come with me'},
+  ],
+  charOptions: [
+    {v:'A young adult',        it:'Un giovane adulto',       en:'A young adult'},
+    {v:'An elderly person',    it:'Una persona anziana',     en:'An elderly person'},
+    {v:'A child',              it:'Un bambino',              en:'A child'},
+    {v:'A teenager',           it:'Un adolescente',          en:'A teenager'},
+    {v:'A crowd',              it:'Una folla',               en:'A crowd'},
+    {v:'A silhouette',         it:'Una sagoma',              en:'A silhouette'},
+    {v:'A mysterious figure',  it:'Una figura misteriosa',   en:'A mysterious figure'},
+    {v:'A woman',              it:'Una donna',               en:'A woman'},
+    {v:'A man',                it:'Un uomo',                 en:'A man'},
+  ],
+};
+
+const CHIPS = {
+  styleChips: [
+    {v:'Cyberpunk',          it:'Cyberpunk',          en:'Cyberpunk'},
+    {v:'2D animation',       it:'Animazione 2D',      en:'2D animation'},
+    {v:'3D animation',       it:'Animazione 3D',      en:'3D animation'},
+    {v:'Film noir',          it:'Film noir',          en:'Film noir'},
+    {v:'Comic book',         it:'Fumetto',            en:'Comic book'},
+    {v:'Documentary style',  it:'Stile documentario', en:'Documentary style'},
+    {v:'Vintage film',       it:"Cinema d'epoca",     en:'Vintage film'},
+    {v:'Anime',              it:'Anime',              en:'Anime'},
+  ],
+  atmosphereChips: [
+    {v:'Fog',            it:'Nebbia',               en:'Fog'},
+    {v:'Rain',           it:'Pioggia',              en:'Rain'},
+    {v:'Mist',           it:'Foschia',              en:'Mist'},
+    {v:'Smoke',          it:'Fumo',                 en:'Smoke'},
+    {v:'Dust particles', it:'Polvere',              en:'Dust'},
+    {v:'Snow',           it:'Neve',                 en:'Snow'},
+    {v:'Fire embers',    it:'Braci',                en:'Embers'},
+    {v:'Storm clouds',   it:'Nuvole di tempesta',   en:'Storm clouds'},
+  ],
+  pacingChips: [
+    {v:'# Slow motion',   it:'Rallentatore',   en:'Slow motion'},
+    {v:'# Time-lapse',    it:'Timelapse',      en:'Time-lapse'},
+    {v:'# Rapid cuts',    it:'Tagli rapidi',   en:'Rapid cuts'},
+    {v:'# Long take',     it:'Piano sequenza', en:'Long take'},
+    {v:'# Freeze frame',  it:'Fermo immagine', en:'Freeze frame'},
+  ],
+};
+
+const ACTION_CARDS = [
+  {
+    cat:{it:'🎬 Apertura', en:'🎬 Opening'},
+    cards:[
+      {v:'The shot opens on a lone figure',        it:'Apre su una figura solitaria',         en:'Opens on a lone figure'},
+      {v:'We open on an empty street',             it:'Apre su una strada vuota',             en:'Empty street'},
+      {v:'The camera finds a person waiting',      it:'La camera trova qualcuno che aspetta', en:'Camera finds someone waiting'},
+      {v:'A figure emerges from the shadows',      it:"Una figura emerge dall'ombra",          en:'Emerges from shadows'},
+      {v:'The scene opens in silence',             it:'La scena si apre nel silenzio',        en:'Opens in silence'},
+      {v:'We begin with movement in the distance', it:'Inizia con movimento in lontananza',   en:'Movement in distance'},
+    ]
+  },
+  {
+    cat:{it:'👤 Soggetti', en:'👤 Subjects'},
+    cards:[
+      {v:'A young adult stands still',          it:'Un giovane adulto è immobile',       en:'Young adult, still'},
+      {v:'Two figures face each other',         it:'Due figure si fronteggiano',          en:'Two figures facing'},
+      {v:'A child looks up',                    it:'Un bambino alza lo sguardo',          en:'Child looks up'},
+      {v:'A group of people gathers',           it:'Un gruppo di persone si raduna',      en:'Group gathers'},
+      {v:'A silhouette watches from afar',      it:'Una sagoma osserva da lontano',       en:'Silhouette watches'},
+      {v:'An elderly person sits alone',        it:'Una persona anziana siede sola',      en:'Elderly person, alone'},
+      {v:'A figure stands at the window',       it:'Una figura è ferma alla finestra',    en:'Figure at window'},
+    ]
+  },
+  {
+    cat:{it:'⚡ Movimenti', en:'⚡ Movements'},
+    cards:[
+      {v:'Someone walks slowly into frame',      it:'Qualcuno cammina lentamente in scena',  en:'Walks slowly in'},
+      {v:'A figure runs through the space',      it:'Una figura attraversa di corsa',         en:'Runs through'},
+      {v:'They stop suddenly',                   it:'Si fermano di colpo',                    en:'Stops suddenly'},
+      {v:'Someone turns to look',                it:'Qualcuno si gira a guardare',            en:'Turns to look'},
+      {v:'A hand reaches out',                   it:'Una mano si allunga',                    en:'Hand reaches out'},
+      {v:'They fall to the ground',              it:'Cadono a terra',                         en:'Falls to ground'},
+      {v:'A figure disappears into the crowd',   it:'Si perde nella folla',                   en:'Lost in crowd'},
+      {v:'Someone collapses',                    it:'Qualcuno crolla',                         en:'Collapses'},
+    ]
+  },
+  {
+    cat:{it:'🔄 Transizioni', en:'🔄 Transitions'},
+    cards:[
+      {v:'Then',              it:'Poi',                  en:'Then'},
+      {v:'Suddenly',          it:"All'improvviso",       en:'Suddenly'},
+      {v:'Meanwhile',         it:'Nel frattempo',        en:'Meanwhile'},
+      {v:'Later',             it:'Più tardi',            en:'Later'},
+      {v:'Finally',           it:'Infine',               en:'Finally'},
+      {v:'At the same time',  it:'Allo stesso tempo',    en:'At the same time'},
+    ]
+  },
+  {
+    cat:{it:'💬 Momenti', en:'💬 Moments'},
+    cards:[
+      {v:'A moment of stillness',         it:'Un momento di quiete',          en:'Stillness'},
+      {v:'The tension builds',            it:'La tensione aumenta',            en:'Tension builds'},
+      {v:'Something shifts in the air',   it:"Qualcosa cambia nell'aria",      en:'Something shifts'},
+      {v:'Eyes meet briefly',             it:'Gli occhi si incrociano',        en:'Eyes meet'},
+      {v:'A moment of hesitation',        it:'Un momento di esitazione',       en:'Hesitation'},
+      {v:'The silence breaks',            it:'Il silenzio si rompe',           en:'Silence breaks'},
+      {v:'Time seems to stand still',     it:'Il tempo sembra fermarsi',       en:'Time stands still'},
+    ]
+  },
+];
+
+// ═══════════════════════════════════════════
+//  TRANSLATIONS — stringhe UI
+// ═══════════════════════════════════════════
+const T = {
+  it:{
+    recLabel:'LIVE', tabBuilder:'⬡ Costruttore', tabImport:'↓ Importa',
+    sec1:'INQUADRATURA', sec2:'AMBIENTAZIONE', sec3:'AZIONE',
+    sec4:'PERSONAGGI', sec5:'CAMERA', sec6:'AUDIO',
+    lblShot:'Tipo inquadratura', lblGenre:'Genere', lblStyle:'Stile visivo',
+    lblLighting:'Illuminazione', lblColors:'Palette colori', lblLocation:'Luogo',
+    lblTime:'Orario', lblAtmosphere:'Atmosfera', lblPacing:'Ritmo (commento)',
+    lblSequence:'Sequenza azione', btnClearSeq:'Svuota',
+    seqEmpty:'Clicca le card per aggiungere azioni...',
+    lblCharCount:'Numero personaggi', lblCamera:'Movimento camera',
+    lblFocus:'Fuoco', lblAmbient:'Suoni ambientali', lblDialogue:'Dialogo',
+    importTitle:'IMPORTA PROMPT', lblImportArea:'Incolla prompt esistente',
+    previewTitle:'OUTPUT PREVIEW', statLines:'RIGHE', statChars:'CARATTERI',
+    statSections:'SEZIONI', btnCopy:'Copia', btnReset:'Reset', btnSave:'Salva .txt',
+    btnVariants:'Genera 5 Varianti',
+    tabShuffle:'⚄ Shuffle',
+    shuffleTitle:'Combinazione casuale',
+    btnShuffleBig:'SHUFFLE',
+    shuffleHint:'ogni click = nuovo prompt unico',
+    shuffleResultLabel:'Prompt generato — clicca per copiare',
+    shuffleCopyHint:'click per copiare',
+    btnShuffleAgain:'↻ ancora',
+    shuffleCounterTpl:'generati oggi: %n',
+    defaultPreview:'Seleziona le opzioni per generare il prompt...',
+    toastCopied:'✓ Copiato negli appunti', toastSaved:'✓ File salvato',
+    toastVariants:'✓ Varianti generate', noneOption:'—',
+  },
+  en:{
+    recLabel:'LIVE', tabBuilder:'⬡ Builder', tabImport:'↓ Import',
+    sec1:'FRAMING', sec2:'SETTING', sec3:'ACTION',
+    sec4:'CHARACTERS', sec5:'CAMERA', sec6:'AUDIO',
+    lblShot:'Shot type', lblGenre:'Genre', lblStyle:'Visual style',
+    lblLighting:'Lighting', lblColors:'Color palette', lblLocation:'Location',
+    lblTime:'Time of day', lblAtmosphere:'Atmosphere', lblPacing:'Pacing (comment)',
+    lblSequence:'Action sequence', btnClearSeq:'Clear',
+    seqEmpty:'Click cards to add actions...',
+    lblCharCount:'Characters', lblCamera:'Camera movement',
+    lblFocus:'Focus', lblAmbient:'Ambient sound', lblDialogue:'Dialogue',
+    importTitle:'IMPORT PROMPT', lblImportArea:'Paste existing prompt',
+    previewTitle:'OUTPUT PREVIEW', statLines:'LINES', statChars:'CHARS',
+    statSections:'SECTIONS', btnCopy:'Copy', btnReset:'Reset', btnSave:'Save .txt',
+    btnVariants:'Generate 5 Variants',
+    tabShuffle:'⚄ Shuffle',
+    shuffleTitle:'Random combination',
+    btnShuffleBig:'SHUFFLE',
+    shuffleHint:'every click = a unique new prompt',
+    shuffleResultLabel:'Generated prompt — click to copy',
+    shuffleCopyHint:'click to copy',
+    btnShuffleAgain:'↻ again',
+    shuffleCounterTpl:'generated: %n',
+    defaultPreview:'Select options to generate your prompt...',
+    toastCopied:'✓ Copied to clipboard', toastSaved:'✓ File saved',
+    toastVariants:'✓ Variants generated', noneOption:'—',
+  }
+};
+
+// ═══════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════
+let currentLang = 'it';
+let actionSequence = [];
+
+// ═══════════════════════════════════════════
+//  SELECTS
+// ═══════════════════════════════════════════
+function renderSelect(id, dataKey) {
+  const sel = document.getElementById(id);
+  const curr = sel.value;
+  sel.innerHTML = `<option value="">${T[currentLang].noneOption}</option>`;
+  SELECTS[dataKey].forEach(o => {
+    const opt = document.createElement('option');
+    opt.value = o.v;
+    opt.textContent = o[currentLang] || o.en;
+    if (o.v === curr) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+function renderAllSelects() {
+  ['shotType','shotGenre','lighting','colorPalette','location','timeOfDay',
+   'cameraMove','focus','ambient','dialogue'].forEach(id => {
+    renderSelect(id, id);
+  });
+  updateCharFields();
+}
+
+// ═══════════════════════════════════════════
+//  CHIPS
+// ═══════════════════════════════════════════
+function renderChips(containerId, dataKey) {
+  const container = document.getElementById(containerId);
+  const checked = new Set(Array.from(container.querySelectorAll('input:checked')).map(i=>i.value));
+  container.innerHTML = '';
+  CHIPS[dataKey].forEach(o => {
+    const lbl = document.createElement('label');
+    const isChecked = checked.has(o.v);
+    lbl.className = 'chip' + (isChecked ? ' checked' : '');
+    lbl.innerHTML = `<input type="checkbox" value="${o.v}"${isChecked?' checked':''}><span class="chip-dot"></span>${o[currentLang]||o.en}`;
+    lbl.addEventListener('click', function(e) {
+      e.preventDefault();
+      const cb = this.querySelector('input');
+      // For pacing: single select behaviour
+      if (dataKey === 'pacingChips' && !cb.checked) {
+        container.querySelectorAll('input').forEach(i => { i.checked=false; i.closest('.chip').classList.remove('checked'); });
+      }
+      cb.checked = !cb.checked;
+      this.classList.toggle('checked', cb.checked);
+      generatePrompt();
+    });
+    container.appendChild(lbl);
+  });
+}
+function renderAllChips() {
+  renderChips('styleChips','styleChips');
+  renderChips('atmosphereChips','atmosphereChips');
+  renderChips('pacingChips','pacingChips');
+}
+function getCheckedValues(id) {
+  return Array.from(document.querySelectorAll(`#${id} input:checked`)).map(i=>i.value);
+}
+
+// ═══════════════════════════════════════════
+//  ACTION CARDS
+// ═══════════════════════════════════════════
+function renderActionCards() {
+  const container = document.getElementById('actionCats');
+  container.innerHTML = '';
+  ACTION_CARDS.forEach(group => {
+    const catDiv = document.createElement('div');
+    catDiv.className = 'action-cat';
+    const hd = document.createElement('div');
+    hd.className = 'action-cat-hd';
+    hd.textContent = group.cat[currentLang];
+    const grid = document.createElement('div');
+    grid.className = 'action-cards-grid';
+    group.cards.forEach(card => {
+      const btn = document.createElement('button');
+      btn.className = 'acard';
+      btn.textContent = card[currentLang] || card.en;
+      btn.dataset.v = card.v;
+      btn.dataset.it = card.it;
+      btn.dataset.en = card.en;
+      btn.addEventListener('click', function() {
+        this.classList.remove('pulse');
+        void this.offsetWidth;
+        this.classList.add('pulse');
+        addToSequence({v:this.dataset.v, it:this.dataset.it, en:this.dataset.en});
+      });
+      grid.appendChild(btn);
+    });
+    catDiv.appendChild(hd);
+    catDiv.appendChild(grid);
+    container.appendChild(catDiv);
+  });
+}
+
+function addToSequence(item) { actionSequence.push(item); renderSequence(); generatePrompt(); }
+function removeFromSequence(idx) { actionSequence.splice(idx,1); renderSequence(); generatePrompt(); }
+function clearSequence() { actionSequence=[]; renderSequence(); generatePrompt(); }
+
+function renderSequence() {
+  const list = document.getElementById('sequenceList');
+  if (!actionSequence.length) {
+    list.innerHTML = `<div class="seq-empty">${T[currentLang].seqEmpty}</div>`;
+    return;
+  }
+  list.innerHTML = '';
+  actionSequence.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = 'seq-item';
+    div.innerHTML = `<span class="seq-num">${String(i+1).padStart(2,'0')}</span><span class="seq-text">${item.v}</span><button class="seq-remove" onclick="removeFromSequence(${i})">✕</button>`;
+    list.appendChild(div);
+  });
+}
+
+// ═══════════════════════════════════════════
+//  CHAR FIELDS
+// ═══════════════════════════════════════════
+function updateCharFields() {
+  const count = parseInt(document.getElementById('charCount').value)||0;
+  const container = document.getElementById('charFields');
+  container.innerHTML = '';
+  for (let i=1; i<=count; i++) {
+    const div = document.createElement('div');
+    div.className = 'char-field';
+    const opts = SELECTS.charOptions.map(o=>`<option value="${o.v}">${o[currentLang]||o.en}</option>`).join('');
+    div.innerHTML = `<span class="char-num">${String(i).padStart(2,'0')}</span><select id="char-${i}" onchange="generatePrompt()" style="flex:1"><option value="">${T[currentLang].noneOption}</option>${opts}</select>`;
+    container.appendChild(div);
+  }
+}
+
+// ═══════════════════════════════════════════
+//  GENERATE PROMPT
+// ═══════════════════════════════════════════
+function generatePrompt() {
+  const lines = [];
+  let sections = 0;
+
+  // 1. Shot
+  const shot  = document.getElementById('shotType').value;
+  const genre = document.getElementById('shotGenre').value;
+  const styles = getCheckedValues('styleChips');
+  if (shot||genre||styles.length) { lines.push([shot,genre,...styles].filter(Boolean).join(' - ')); sections++; }
+
+  // 2. Setting
+  const lighting = document.getElementById('lighting').value;
+  const colors   = document.getElementById('colorPalette').value;
+  const location = document.getElementById('location').value;
+  const timeOD   = document.getElementById('timeOfDay').value;
+  const atm      = getCheckedValues('atmosphereChips');
+  const scene    = [lighting,colors,location,timeOD,...atm].filter(Boolean);
+  if (scene.length) { scene.forEach(s=>lines.push(s)); sections++; }
+
+  // 3. Action
+  const pacingVals = getCheckedValues('pacingChips');
+  let hasAction = false;
+  if (pacingVals.length) { lines.push(pacingVals[0]); hasAction=true; }
+  if (actionSequence.length) { actionSequence.forEach(a=>lines.push(a.v)); hasAction=true; }
+  if (hasAction) sections++;
+
+  // 4. Characters
+  const count = parseInt(document.getElementById('charCount').value)||0;
+  let hasChars = false;
+  for (let i=1; i<=count; i++) {
+    const el = document.getElementById(`char-${i}`);
+    if (el&&el.value) { lines.push(el.value); hasChars=true; }
+  }
+  if (hasChars) sections++;
+
+  // 5. Camera
+  const cam   = document.getElementById('cameraMove').value;
+  const focus = document.getElementById('focus').value;
+  if (cam)   lines.push(cam);
+  if (focus) lines.push(focus);
+  if (cam||focus) sections++;
+
+  // 6. Audio
+  const ambient  = document.getElementById('ambient').value;
+  const dialogue = document.getElementById('dialogue').value;
+  if (ambient)  lines.push(`Sound: ${ambient}`);
+  if (dialogue) lines.push(`"${dialogue}"`);
+  if (ambient||dialogue) sections++;
+
+  const prompt = lines.length ? lines.join('\n')+'.' : '';
+  renderPreview(prompt, lines.length, sections);
+  return prompt;
+}
+
+// ═══════════════════════════════════════════
+//  RENDER PREVIEW
+// ═══════════════════════════════════════════
+function renderPreview(prompt, lineCount, sections) {
+  const box = document.getElementById('previewBox');
+  if (!prompt) {
+    box.classList.remove('has-content');
+    box.innerHTML = `<span style="color:var(--text-dim);font-style:italic">${T[currentLang].defaultPreview}</span>`;
+  } else {
+    box.classList.add('has-content');
+    const atmVals = getCheckedValues('atmosphereChips');
+    const html = prompt.split('\n').map((line,i) => {
+      const esc = line.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+      if (line.startsWith('#')) return `<span class="pc">${esc}</span>`;
+      if (line.startsWith('Sound:')||line.startsWith('"')) return `<span class="pa">${esc}</span>`;
+      if (atmVals.includes(line)) return `<span class="patm">${esc}</span>`;
+      if (i===0) return `<span class="ph">${esc}</span>`;
+      return esc;
+    }).join('\n');
+    box.innerHTML = html;
+  }
+  document.getElementById('statLines').textContent    = lineCount;
+  document.getElementById('statChars').textContent    = prompt.length;
+  document.getElementById('statSections').textContent = sections;
+  const pct = Math.round((sections/6)*100);
+  document.getElementById('progressFill').style.width = pct+'%';
+  document.getElementById('progressText').textContent  = `${sections}/6`;
+}
+
+// ═══════════════════════════════════════════
+//  LANGUAGE
+// ═══════════════════════════════════════════
+function setLanguage(lang) {
+  currentLang = lang;
+  document.getElementById('btnIT').classList.toggle('active', lang==='it');
+  document.getElementById('btnEN').classList.toggle('active', lang==='en');
+  const t = T[lang];
+  document.querySelectorAll('[data-t]').forEach(el => {
+    const key = el.getAttribute('data-t');
+    if (t[key]!==undefined) el.textContent = t[key];
+  });
+  renderAllSelects();
+  renderAllChips();
+  renderActionCards();
+  renderSequence();
+  generatePrompt();
+}
+
+// ═══════════════════════════════════════════
+//  TABS
+// ═══════════════════════════════════════════
+function showTab(name) {
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('pane-'+name).classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+}
+
+// ═══════════════════════════════════════════
+//  COPY / SAVE / RESET
+// ═══════════════════════════════════════════
+function copyPrompt() {
+  const p = generatePrompt();
+  if (!p) return;
+  navigator.clipboard.writeText(p).then(()=>showToast(T[currentLang].toastCopied));
+}
+function saveFile() {
+  const p = generatePrompt();
+  if (!p) return;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([p],{type:'text/plain'}));
+  a.download = `ltx-prompt-${Date.now()}.txt`;
+  a.click();
+  showToast(T[currentLang].toastSaved);
+}
+function resetForm() {
+  document.querySelectorAll('select').forEach(s=>s.value='');
+  document.getElementById('charCount').value='0';
+  document.querySelectorAll('.chip').forEach(c=>{c.classList.remove('checked');c.querySelector('input').checked=false;});
+  actionSequence=[];
+  renderSequence(); updateCharFields(); generatePrompt();
+}
+
+// ═══════════════════════════════════════════
+//  VARIANTS
+// ═══════════════════════════════════════════
+const variantMods = [
+  l=>{l.splice(1,0,'# Slow motion'); return l;},
+  l=>{l.splice(l.length-1,0,'Fog'); return l;},
+  l=>{l.push(['The camera pans right','The camera orbits','Handheld movement'][Math.floor(Math.random()*3)]); return l;},
+  l=>{if(l.length) l[0]=l[0].split(' - ')[0]+' - '+['Sci-fi','Horror','Thriller','Romance'][~~(Math.random()*4)]; return l;},
+  l=>{l.push('Sound: '+['Wind','City noise','Rain','Ocean waves'][~~(Math.random()*4)]); return l;},
+];
+function generateVariants() {
+  const base = document.getElementById('importText').value.trim();
+  if (!base) return;
+  const grid = document.getElementById('variantsGrid');
+  grid.innerHTML = `<div style="color:var(--text-muted);font-family:var(--mono);font-size:.76rem;padding:6px 0">Elaborazione...</div>`;
+  setTimeout(()=>{
+    grid.innerHTML='';
+    for(let i=0;i<5;i++){
+      let lines = base.split('\n').map(l=>l.trim()).filter(Boolean);
+      if(lines.length&&lines[lines.length-1].endsWith('.')) lines[lines.length-1]=lines[lines.length-1].slice(0,-1);
+      lines = variantMods[i]([...lines]);
+      const variant = lines.join('\n')+'.';
+      const card = document.createElement('div');
+      card.className='variant-card';
+      card.textContent=variant;
+      card.innerHTML+=`<span class="variant-num">V${i+1}</span>`;
+      card.addEventListener('click',()=>{navigator.clipboard.writeText(variant);showToast(T[currentLang].toastCopied);});
+      grid.appendChild(card);
+    }
+    showToast(T[currentLang].toastVariants);
+  },280);
+}
+
+// ═══════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+// ═══════════════════════════════════════════
+//  SHUFFLE
+// ═══════════════════════════════════════════
+let shuffleCount = 0;
+let lastShufflePrompt = '';
+
+function rnd(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function maybe(arr, prob) { return Math.random() < prob ? rnd(arr).v : null; }
+
+function runShuffle() {
+  // dice spin animation
+  const dice = document.getElementById('shuffleDice');
+  const btn  = document.getElementById('btnShuffleBig');
+  btn.classList.add('spinning');
+  setTimeout(() => btn.classList.remove('spinning'), 420);
+  const faces = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+  dice.textContent = rnd(faces);
+
+  const lines = [];
+  const tags  = [];
+
+  // 1. Shot + genre (always) + maybe style
+  const shot  = rnd(SELECTS.shotType).v;
+  const genre = rnd(SELECTS.shotGenre).v;
+  const style = maybe(CHIPS.styleChips, 0.4);
+  const shotLine = [shot, genre, style].filter(Boolean).join(' - ');
+  lines.push(shotLine);
+  tags.push({text: shot, cls:'stag-shot'});
+  tags.push({text: genre, cls:'stag-shot'});
+
+  // 2. Setting — pick 2-4 scene elements
+  const lighting = rnd(SELECTS.lighting).v;
+  lines.push(lighting);
+  const location = rnd(SELECTS.location).v;
+  lines.push(location);
+  tags.push({text: location, cls:'stag-scene'});
+  if (Math.random() < 0.6) {
+    lines.push(rnd(SELECTS.timeOfDay).v);
+  }
+  if (Math.random() < 0.5) {
+    lines.push(rnd(CHIPS.atmosphereChips).v);
+  }
+  if (Math.random() < 0.35) {
+    lines.push(rnd(SELECTS.colorPalette).v);
+  }
+
+  // 3. Action — maybe pacing + 1-3 random action cards
+  if (Math.random() < 0.4) {
+    lines.push(rnd(CHIPS.pacingChips).v);
+  }
+  const allCards = ACTION_CARDS.flatMap(g => g.cards);
+  // pick opening card from first category
+  const opening = rnd(ACTION_CARDS[0].cards);
+  lines.push(opening.v);
+  // 1-2 more random cards from other categories
+  const extraCount = Math.random() < 0.5 ? 1 : 2;
+  const shuffledCats = ACTION_CARDS.slice(1).sort(() => Math.random()-.5);
+  for (let i = 0; i < extraCount; i++) {
+    const card = rnd(shuffledCats[i].cards);
+    lines.push(card.v);
+    tags.push({text: card[currentLang]||card.en, cls:'stag-action'});
+  }
+
+  // 4. Maybe a character
+  if (Math.random() < 0.55) {
+    lines.push(rnd(SELECTS.charOptions).v);
+  }
+
+  // 5. Camera
+  const cam = rnd(SELECTS.cameraMove).v;
+  lines.push(cam);
+  tags.push({text: cam, cls:'stag-camera'});
+  if (Math.random() < 0.4) {
+    lines.push(rnd(SELECTS.focus).v);
+  }
+
+  // 6. Audio — always ambient, maybe dialogue
+  const ambient = rnd(SELECTS.ambient).v;
+  if (ambient !== 'Silence') {
+    lines.push(`Sound: ${ambient}`);
+    tags.push({text: ambient, cls:'stag-audio'});
+  }
+  if (Math.random() < 0.3) {
+    lines.push(`"${rnd(SELECTS.dialogue).v}"`);
+  }
+
+  const prompt = lines.join('\n') + '.';
+  lastShufflePrompt = prompt;
+  shuffleCount++;
+
+  // render
+  const box = document.getElementById('shufflePromptBox');
+  // highlight lines like preview
+  const html = lines.map((line, i) => {
+    const esc = line.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+    if (line.startsWith('#')) return `<span class="pc">${esc}</span>`;
+    if (line.startsWith('Sound:')||line.startsWith('"')) return `<span class="pa">${esc}</span>`;
+    if (i === 0) return `<span class="ph">${esc}</span>`;
+    return esc;
+  }).join('\n');
+
+  // remove old content except copy hint
+  const hint = box.querySelector('.shuffle-copy-hint');
+  box.innerHTML = html;
+  const newHint = document.createElement('span');
+  newHint.className = 'shuffle-copy-hint';
+  newHint.setAttribute('data-t','shuffleCopyHint');
+  newHint.textContent = T[currentLang].shuffleCopyHint;
+  box.appendChild(newHint);
+
+  // tags
+  const tagsEl = document.getElementById('shuffleTags');
+  tagsEl.innerHTML = tags.map(t=>`<span class="shuffle-tag ${t.cls}">${t.text}</span>`).join('');
+
+  // counter
+  document.getElementById('shuffleCounter').textContent =
+    T[currentLang].shuffleCounterTpl.replace('%n', shuffleCount);
+
+  // show result
+  const result = document.getElementById('shuffleResult');
+  result.classList.add('visible');
+
+  // trigger re-animation
+  box.style.animation = 'none';
+  void box.offsetWidth;
+  box.style.animation = '';
+}
+
+function copyShufflePrompt() {
+  if (!lastShufflePrompt) return;
+  navigator.clipboard.writeText(lastShufflePrompt)
+    .then(() => showToast(T[currentLang].toastCopied));
+}
+
+// ═══════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════
+function init() {
+  renderAllSelects();
+  renderAllChips();
+  renderActionCards();
+  renderSequence();
+  generatePrompt();
+}
+init();
+</script>
+</body>
+</html>
