@@ -171,6 +171,12 @@
     .wmodel-tags{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
     .wmtag{font-family:var(--fm);font-size:.6rem;padding:2px 7px;border-radius:8px;white-space:nowrap}
     .wmtag-cache{background:rgba(5,150,105,.15);color:#6ee7b7;border:1px solid rgba(5,150,105,.35)}
+    /* Confirm modal */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:2000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
+    .modal-box{background:var(--card);border:1px solid var(--border-hi);border-radius:var(--rl);padding:26px 24px;max-width:340px;width:92%;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+    .modal-title{font-family:var(--fb);font-size:1.1rem;letter-spacing:.08em;color:var(--text);margin-bottom:10px}
+    .modal-msg{font-family:var(--fs);font-size:.85rem;color:var(--text-muted);line-height:1.55;margin-bottom:20px}
+    .modal-actions{display:flex;gap:9px;justify-content:flex-end}
     .wmtag-nocache{background:var(--card);color:var(--text-dim);border:1px solid var(--border)}
     .wmtag-vram{background:rgba(8,145,178,.2);color:var(--cyan-bright);border:1px solid rgba(8,145,178,.4)}
   </style>
@@ -183,7 +189,19 @@
     <button class="mode-btn" data-mode="manual" onclick="setMode('manual')">MANUALE</button>
     <button class="mode-btn active" data-mode="ai" onclick="setMode('ai')">AI STORY</button>
   </div>
+  <button class="btn btn-s btn-sm" style="flex-shrink:0;margin-left:auto" onclick="promptClearMemory()" title="Cancella tutta la memoria salvata">&#9249; Reset memoria</button>
 </header>
+
+<div id="confirm-modal" style="display:none" class="modal-overlay" onclick="if(event.target===this)confirmCancel()">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-title">Conferma</div>
+    <div class="modal-msg" id="modal-msg"></div>
+    <div class="modal-actions">
+      <button class="btn btn-s" onclick="confirmCancel()">Annulla</button>
+      <button class="btn btn-d" id="modal-ok-btn" onclick="confirmOk()">Conferma</button>
+    </div>
+  </div>
+</div>
 
 <!-- MANUAL MODE -->
 <div id="mode-manual" class="mode-panel">
@@ -408,7 +426,7 @@
 
         <div class="ai-panel">
           <div class="ap-title">LA TUA STORIA</div>
-          <textarea class="story-ta" id="ai-story" placeholder="Descrivi la tua storia, scena o idea... (puoi scrivere in italiano, l'AI generer&#224; i prompt in inglese)"></textarea>
+          <textarea class="story-ta" id="ai-story" placeholder="Descrivi la tua storia, scena o idea... (puoi scrivere in italiano, l'AI generer&#224; i prompt in inglese)" oninput="saveToStorage()"></textarea>
         </div>
 
         <div class="ai-panel">
@@ -737,39 +755,48 @@ const CHAR_OPTS = {
   expression:[{v:'',l:'\u2014'},{v:'neutral',l:'Neutral'},{v:'determined',l:'Determined'},{v:'fearful',l:'Fearful'},{v:'joyful',l:'Joyful'},{v:'angry',l:'Angry'},{v:'sorrowful',l:'Sorrowful'},{v:'pensive',l:'Pensive'},{v:'surprised',l:'Surprised'},{v:'stoic',l:'Stoic'}],
 };
 
-const SYSTEM_PROMPT = `You are an expert cinematographer and AI prompt engineer specializing in LTX-Video and image generation.
+const SYSTEM_PROMPT = `You are a specialized LTX-Video prompt engineer. Your ONLY job is to output ready-to-use video generation prompts. Do NOT write any introduction, explanation, greeting, or commentary — output ONLY the prompts in the exact format below.
 
-CRITICAL RULES:
+━━━ WHAT IS LTX-VIDEO ━━━
+LTX-Video is an open-source video diffusion model. Each prompt describes one 3–8 second video clip. The model reads the entire prompt as a single description — every detail you include (shot type, character appearance, action, camera, lighting, sound) directly shapes the generated video. Dense, specific prompts produce far better results than vague ones.
 
-1. LANGUAGE: All prompts in ENGLISH. Any spoken dialogue by characters must be in Italian, inline (e.g.: "Aspetta!" she whispers).
+━━━ PROMPT ANATOMY ━━━
+Build every prompt as a single continuous line in this order:
+[shot type & camera angle] → [visual style / cinematic genre] → [location & environment details] → [lighting quality, color palette, time of day] → [full character description: age, gender, build, hair, clothing, expression] → [action described from first to last frame] → [camera movement] → [sound design]
 
-2. SINGLE LINE FORMAT (MOST IMPORTANT):
-   Each prompt MUST be written as a SINGLE LINE with NO line breaks inside it.
-   - Separate all elements with commas or natural conjunctions
-   - NO internal periods — end with exactly ONE period at the very end
-   - Every prompt goes on its own line in the output
-   - Multiple prompts = multiple lines, each ending with a period
+━━━ MANDATORY RULES ━━━
+1. OUTPUT ONLY PROMPTS — zero intro text, zero explanation, zero meta-commentary
+2. ALL TEXT IN ENGLISH — if a character speaks, write dialogue inline in the original language in quotes (e.g. "Aspetta!" she whispers)
+3. ONE LINE PER PROMPT — absolutely no internal line breaks inside a prompt
+4. NO INTERNAL PERIODS — commas and conjunctions only; one single period at the very end
+5. SELF-CONTAINED — every prompt stands alone; repeat full character and scene description every time; never reference "the previous shot" or "as seen before"
+6. STORY ARC — vary shot sizes (extreme close-up → wide → medium), camera moves, and emotional progression across all prompts
 
-3. SELF-CONTAINED PROMPTS:
-   Every prompt must describe EVERYTHING from scratch: full character description, scene, lighting, camera, atmosphere.
-   The prompt alone must make the result inevitable — never reference other prompts.
+━━━ OUTPUT FORMAT — USE EXACTLY THIS, NO DEVIATIONS ━━━
 
-4. LTX-2.3 VIDEO PROMPT STRUCTURE (single line):
-   [shot type and angle], [visual genre/style], [location and environment], [lighting and color palette], [time of day], [full character description with appearance and clothing], [action from start to finish], [camera movement], [audio/sound design]
+--- PROMPT 1: [SHORT TITLE IN CAPS] ---
+[the full single-line prompt ending with a period]
 
-5. Z-IMAGE PROMPT STRUCTURE (single line):
-   [subject and action], [environment], [lighting quality and direction], [lens/artistic medium], [composition and framing], [depth of field], [perspective]
+--- PROMPT 2: [SHORT TITLE IN CAPS] ---
+[the full single-line prompt ending with a period]
 
-6. NARRATIVE ARC: When generating multiple prompts, create a proper story arc with varied shot sizes, camera movements, and scene progression.
+(continue for all requested prompts)
 
-7. OUTPUT FORMAT:
-   --- PROMPT 1: [SHORT TITLE] ---
-   [single line prompt ending with a period]
+━━━ FULL WORKED EXAMPLE (3 prompts for "a spy chasing someone through rain") ━━━
 
-   --- PROMPT 2: [SHORT TITLE] ---
-   [single line prompt ending with a period]
+--- PROMPT 1: RAINY ALLEY ---
+Extreme close-up low-angle shot, neo-noir cinematic style, dark rain-soaked alley in a European city at midnight, blue-green neon reflections shimmering on wet cobblestones, deep shadows with pools of amber light, a woman in her early 30s with wet dark hair plastered to her face wearing a black trench coat runs hard into frame from the left, her expression fierce and desperate, she glances back over her shoulder and surges forward, handheld camera chases her from knee height tilting up as she accelerates past, Sound: heavy downpour, echoing footsteps on stone, distant police sirens.
 
-Generate prompts so vivid and specific that the model has no choice but to produce exactly the intended result.`;
+--- PROMPT 2: ROOFTOP PURSUIT ---
+Wide establishing aerial shot descending rapidly, hyperrealistic action thriller, rain-lashed urban rooftop at night covered in puddles and HVAC units, high-contrast orange streetlight glow rising from below meeting cold blue-black stormlit sky, a lean man in his mid-40s with short grey stubble wearing a soaked grey hoodie sprints across the rooftop, 30 metres behind him a woman in a black trench coat closes the distance with long powerful strides, both lit by a lightning flash that freezes them for a fraction of a second, drone camera drops to eye level as they charge toward the far edge, Sound: thunder crack, howling wind, pounding footsteps on wet gravel.
+
+--- PROMPT 3: CONFRONTATION ON FIRE ESCAPE ---
+Medium shot slightly low angle, gritty noir realism, exterior iron fire escape of a weathered red-brick building lashed by rain, warm amber window glow from inside silhouettes both figures against the darkness, night, a woman in her early 30s in a soaked black trench coat grabs the lapels of a breathless man in a grey hoodie and slams him against the railing, both are panting and rain-drenched, their faces centimetres apart, her expression is fury mixed with recognition and his is exhausted defeat, static camera holds then slowly pushes in on their faces, Sound: rain hammering metal grating, laboured breathing, faint city traffic below.
+
+━━━ Z-IMAGE PROMPT ANATOMY (use for still image mode) ━━━
+[subject type and action], [environment and context], [lighting quality and direction], [lens type or artistic medium], [composition and framing], [depth of field], [perspective and viewpoint]. End with one period.`;
+
+// ===================== STATE =====================
 
 // ===================== STATE =====================
 
@@ -1285,39 +1312,15 @@ async function loadWebGPUModel() {
   }
 }
 
-async function unloadWebGPUModel() {
-  var p = wgpuSt.pipeline;
-  if (!p) return;
+function unloadWebGPUModel() {
+  if (!wgpuSt.pipeline) return;
   var unloadBtn = document.getElementById('wgpu-unload-btn');
-  unloadBtn.disabled = true;
-  unloadBtn.textContent = 'Scaricamento...';
-
-  // transformers.js v3: PreTrainedModel exposes `sessions` (array of names).
-  // Each session key on the model object is an InferenceSession whose
-  // .handler.dispose() destroys the underlying ORT WebGPU session and
-  // calls GPUBuffer.destroy() on every allocated GPU buffer.
-  var freed = 0;
-  var model = p.model;
-  if (model) {
-    var sessionNames = Array.isArray(model.sessions) ? model.sessions : ['model'];
-    for (var i = 0; i < sessionNames.length; i++) {
-      var sess = model[sessionNames[i]];
-      if (sess && sess.handler && typeof sess.handler.dispose === 'function') {
-        try { await sess.handler.dispose(); freed++; } catch(e) {}
-      }
-    }
-  }
-
-  wgpuSt.pipeline = null;
-  wgpuSt.loadedModel = '';
-  updateCacheBadges();
-
-  setWGPUStatus('', freed > 0 ? 'VRAM liberata (' + freed + ' sessioni chiuse)' : 'Rimosso — GC liberer\u00e0 la VRAM', 0);
-  document.getElementById('wgpu-load-btn').style.display = 'flex';
-  unloadBtn.style.display = 'none';
-  unloadBtn.disabled = false;
-  unloadBtn.textContent = '\u25a0 SCARICA DALLA VRAM';
-  showToast(freed > 0 ? 'VRAM liberata' : 'Modello rimosso', 'ok');
+  if (unloadBtn) { unloadBtn.disabled = true; unloadBtn.textContent = 'Ricarico pagina...'; }
+  // Save all state, set the reload flag, then reload the page.
+  // The browser GPU process releases VRAM only when the page is torn down.
+  saveToStorage();
+  localStorage.setItem(LS+'vram-reload', '1');
+  location.reload();
 }
 
 function setWGPUStatus(state, msg, progress) {
@@ -1441,8 +1444,13 @@ async function generateStory() {
   var so = document.getElementById('stream-out');
   so.textContent = '';
 
-  var outNote = {ltx:'Generate LTX-2.3 video prompts only.',zimage:'Generate Z-Image image prompts only.',both:'Generate both LTX-2.3 video and Z-Image image prompts, alternating.'}[aiSt.outputMode];
-  var userMsg = outNote+'\n\nGenerate exactly '+aiSt.count+' prompts from the following story/idea:\n\n'+story;
+  var outNote = {ltx:'Generate LTX-2.3 VIDEO prompts only (use the LTX-Video prompt anatomy).',zimage:'Generate Z-IMAGE still image prompts only (use the Z-Image prompt anatomy).',both:'Alternate: odd-numbered prompts are LTX-2.3 video, even-numbered are Z-Image still image.'}[aiSt.outputMode];
+  var userMsg = outNote+'\n\nGenerate EXACTLY '+aiSt.count+' prompts for this story/idea:\n\n'+story+'\n\n'
+    +'REMINDERS:\n'
+    +'- Output ONLY the prompts using the --- PROMPT N: TITLE --- format. No other text.\n'
+    +'- Each prompt = one single line, no internal line breaks, one period at the end.\n'
+    +'- Every prompt must be self-contained with full scene, character, camera, and sound details.\n'
+    +'- Start your response immediately with "--- PROMPT 1:"';
   var ep = document.getElementById('ai-endpoint').value.trim();
 
   try {
@@ -1518,45 +1526,81 @@ async function generateStory() {
   }
 }
 
+function preprocessLLMOutput(raw) {
+  // Strip common LLM preambles before the first prompt marker
+  var firstMarker = raw.search(/[-*#]{2,}\s*PROMPT\s*\d+/i);
+  if (firstMarker > 0) raw = raw.slice(firstMarker);
+
+  // Collapse multiple blank lines to one
+  raw = raw.replace(/\n{3,}/g, '\n\n');
+
+  // Strip markdown bold/italic wrappers around prompt text (**text** → text)
+  raw = raw.replace(/\*{1,3}([^*\n]+)\*{1,3}/g, '$1');
+
+  // Remove trailing "Note:", "Tip:", or similar meta-commentary after the last prompt
+  raw = raw.replace(/\n+(Note|Tip|Remember|NB|PS|Nota|Suggerimento)[:\s].[\s\S]*/i, '');
+
+  return raw.trim();
+}
+
+function cleanPromptText(tx) {
+  // Collapse internal newlines within a prompt into a comma+space (small models sometimes add them)
+  tx = tx.replace(/\n+/g, ', ');
+  // Collapse multiple commas/spaces
+  tx = tx.replace(/,\s*,/g, ',');
+  tx = tx.replace(/\s{2,}/g, ' ');
+  tx = tx.trim();
+  // Ensure exactly one period at the end
+  tx = tx.replace(/[.,\s]+$/, '') + '.';
+  return tx;
+}
+
 function parsePrompts(text) {
+  text = preprocessLLMOutput(text);
   var res, m;
 
-  // Strategy 1: --- PROMPT N: TITLE --- (requested format, flexible dashes/spaces)
+  // Strategy 1: --- PROMPT N: TITLE --- or ### PROMPT N: TITLE ### or ** PROMPT N ** etc.
   res = [];
-  var re1 = /[-*]{2,}\s*PROMPT\s*(\d+)[:\s]+([^\n\-]*?)\s*[-*]{2,}\s*\n([\s\S]*?)(?=[-*]{2,}\s*PROMPT\s*\d+|$)/gi;
+  var re1 = /[-*#]{2,}\s*PROMPT\s*(\d+)[:\s–-]*([^\n\-#*]*?)\s*[-*#]{0,3}\s*\n([\s\S]*?)(?=[-*#]{2,}\s*PROMPT\s*\d+|$)/gi;
   while ((m = re1.exec(text)) !== null) {
-    var tx = m[3].trim();
-    if (tx) res.push({num:parseInt(m[1]), title:(m[2]||'Prompt '+m[1]).trim()||'Prompt '+m[1], text:tx});
+    var tx = cleanPromptText(m[3].trim());
+    var title = (m[2]||'').trim().replace(/^[-:]+|[-:]+$/g,'').trim() || 'Prompt '+m[1];
+    if (tx.length > 10) res.push({num:parseInt(m[1]), title:title, text:tx});
   }
   if (res.length >= 2) return res;
 
-  // Strategy 2: "1." / "1)" / "**1.**" / "Prompt 1:" at line start
+  // Strategy 2: "Prompt 1:", "1.", "1)", "**1.**" at line start — title on same line, content below
   res = [];
-  var re2 = /(?:^|\n)[ \t]*(?:\*{0,2}[ \t]*)(?:Prompt\s+)?(\d+)[.):\s]+\*{0,2}[ \t]*([^\n]*)\n?([\s\S]*?)(?=(?:\n[ \t]*(?:\*{0,2}[ \t]*)(?:Prompt\s+)?\d+[.):\s])|$)/gi;
+  var re2 = /(?:^|\n)[ \t]*(?:\*{0,2}[ \t]*)(?:Prompt\s+)?(\d+)[.):\s–]+\*{0,2}[ \t]*([^\n]*)\n?([\s\S]*?)(?=(?:\n[ \t]*(?:\*{0,2}[ \t]*)(?:Prompt\s+)?\d+[.):\s])|$)/gi;
   while ((m = re2.exec(text)) !== null) {
-    var body = (m[2] + (m[3] ? '\n' + m[3] : '')).trim();
+    var body = cleanPromptText((m[2] + (m[3] ? ' ' + m[3] : '')).trim());
     if (body.length > 15) res.push({num:parseInt(m[1]), title:'Prompt '+m[1], text:body});
   }
   if (res.length >= 2) return res;
 
-  // Strategy 3: blocks separated by 2+ blank lines
+  // Strategy 3: blocks separated by blank lines — each block is one prompt
   res = [];
   text.split(/\n{2,}/).forEach(function(block, i) {
-    var tx = block.trim();
-    if (tx.length > 20) res.push({num:i+1, title:'Prompt '+(i+1), text:tx});
+    var tx = cleanPromptText(block.trim());
+    // skip blocks that look like headers/labels only
+    if (tx.length > 30 && !/^(prompt|scene|shot|clip|video|image)\s*\d*[.:)–-]*$/i.test(tx)) {
+      res.push({num:i+1, title:'Prompt '+(i+1), text:tx});
+    }
   });
   if (res.length >= 2) return res;
 
-  // Strategy 4: each non-empty line is a prompt (single-line format)
+  // Strategy 4: each non-empty line is a prompt (single-line output format)
   res = [];
   text.split('\n').forEach(function(line) {
     var tx = line.trim();
-    if (tx.length > 20) res.push({num:res.length+1, title:'Prompt '+(res.length+1), text:tx});
+    if (tx.length > 30 && !/^[-*#=]+$/.test(tx)) {
+      res.push({num:res.length+1, title:'Prompt '+(res.length+1), text:tx.replace(/[.,\s]+$/,'')+'.'});
+    }
   });
   if (res.length >= 2) return res;
 
-  // Last resort: single card with full output
-  if (text.trim()) return [{num:1, title:'Generato', text:text.trim()}];
+  // Last resort: one card with the full output
+  if (text.trim()) return [{num:1, title:'Generato', text:cleanPromptText(text.trim())}];
   return [];
 }
 
@@ -1615,6 +1659,30 @@ function showToast(msg, type) {
   _tt = setTimeout(function(){t.className='toast';}, 2800);
 }
 
+// ===================== CONFIRM MODAL =====================
+
+var _confirmCallback = null;
+function showConfirm(title, msg, callback) {
+  _confirmCallback = callback;
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-msg').textContent = msg;
+  document.getElementById('confirm-modal').style.display = 'flex';
+}
+function confirmOk() {
+  document.getElementById('confirm-modal').style.display = 'none';
+  if (typeof _confirmCallback === 'function') { var cb = _confirmCallback; _confirmCallback = null; cb(); }
+}
+function confirmCancel() {
+  document.getElementById('confirm-modal').style.display = 'none';
+  _confirmCallback = null;
+}
+function promptClearMemory() {
+  showConfirm('Reset memoria', 'Cancella tutti i dati salvati (chip selezionati, endpoint, storia, impostazioni)? L\'operazione è irreversibile.', function() {
+    localStorage.clear();
+    location.reload();
+  });
+}
+
 // ===================== LOCALSTORAGE =====================
 
 var LS = 'ltxpb3_';
@@ -1626,6 +1694,16 @@ function saveToStorage() {
     localStorage.setItem(LS+'ep', aiSt.endpoint||'');
     localStorage.setItem(LS+'model', aiSt.model||'');
     localStorage.setItem(LS+'prov', aiSt.provider||'ollama');
+    // mode & tab
+    var activeMode = document.querySelector('.mode-btn.active');
+    if (activeMode) localStorage.setItem(LS+'mode', activeMode.dataset.mode||'ai');
+    var activeTab = document.querySelector('.sub-tab.active');
+    if (activeTab) localStorage.setItem(LS+'tab', activeTab.textContent.indexOf('LTX')>-1?'ltx':'zimage');
+    // ai story textarea
+    var storyEl = document.getElementById('ai-story');
+    if (storyEl) localStorage.setItem(LS+'story', storyEl.value||'');
+    // selected webgpu model index
+    localStorage.setItem(LS+'wgpu-idx', WMODELS.findIndex(function(m){return m.id===wgpuSt.model;}) || 0);
   } catch(e){}
 }
 
@@ -1668,6 +1746,32 @@ function loadFromStorage() {
     document.getElementById('ep-panel').style.display = isWebGPU ? 'none' : 'block';
     document.getElementById('wgpu-panel').style.display = isWebGPU ? 'block' : 'none';
     updateCacheBadges();
+
+    // restore mode
+    var savedMode = localStorage.getItem(LS+'mode') || 'ai';
+    setMode(savedMode);
+
+    // restore manual sub-tab
+    var savedTab = localStorage.getItem(LS+'tab') || 'ltx';
+    setTab(savedTab);
+
+    // restore ai story textarea
+    var savedStory = localStorage.getItem(LS+'story');
+    if (savedStory) { var stEl = document.getElementById('ai-story'); if (stEl) stEl.value = savedStory; }
+
+    // restore selected webgpu model
+    var savedWIdx = parseInt(localStorage.getItem(LS+'wgpu-idx')||'0', 10);
+    if (!isNaN(savedWIdx) && WMODELS[savedWIdx]) {
+      wgpuSt.model = WMODELS[savedWIdx].id;
+      wgpuSt.dtype = WMODELS[savedWIdx].dtype;
+      document.querySelectorAll('.wmodel-card').forEach(function(c,i){ c.classList.toggle('wm-active', i===savedWIdx); });
+    }
+
+    // handle vram-reload flag
+    if (localStorage.getItem(LS+'vram-reload')) {
+      localStorage.removeItem(LS+'vram-reload');
+      showToast('VRAM liberata — pagina ricaricata', 'ok');
+    }
   } catch(e){}
 }
 
