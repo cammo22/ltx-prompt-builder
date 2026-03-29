@@ -9,53 +9,31 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #08080f;
-      --surface: #0f0f1c;
-      --card: #14142a;
-      --card-hover: #1c1c36;
-      --border: #252545;
-      --border-hi: #38386a;
-      --purple: #7c3aed;
-      --purple-bright: #a78bfa;
-      --cyan: #0891b2;
-      --cyan-bright: #22d3ee;
-      --blue: #2563eb;
-      --text: #dde0f5;
-      --text-muted: #7070a0;
-      --text-dim: #3a3a60;
-      --ok: #059669;
-      --err: #dc2626;
-      --warn: #d97706;
-      --r: 8px;
-      --rl: 14px;
-      --rs: 5px;
-      --fb: 'Bebas Neue', sans-serif;
-      --fm: 'IBM Plex Mono', monospace;
-      --fs: 'DM Sans', sans-serif;
+      --bg: #08080f; --surface: #0f0f1c; --card: #14142a; --card-hover: #1c1c36;
+      --border: #252545; --border-hi: #38386a; --purple: #7c3aed; --purple-bright: #a78bfa;
+      --cyan: #0891b2; --cyan-bright: #22d3ee; --blue: #2563eb;
+      --text: #dde0f5; --text-muted: #7070a0; --text-dim: #3a3a60;
+      --ok: #059669; --err: #dc2626; --warn: #d97706;
+      --r: 8px; --rl: 14px; --rs: 5px;
+      --fb: 'Bebas Neue', sans-serif; --fm: 'IBM Plex Mono', monospace; --fs: 'DM Sans', sans-serif;
     }
     *{margin:0;padding:0;box-sizing:border-box}
     body{background:var(--bg);color:var(--text);font-family:var(--fs);min-height:100vh;overflow-x:hidden}
-
     header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;gap:12px}
     .logo{font-family:var(--fb);font-size:1.5rem;letter-spacing:.12em;background:linear-gradient(90deg,var(--purple-bright),var(--cyan-bright));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;white-space:nowrap}
     .mode-switcher{display:flex;background:var(--card);border-radius:var(--r);padding:3px;gap:3px;border:1px solid var(--border);flex-shrink:0}
     .mode-btn{font-family:var(--fb);font-size:.9rem;letter-spacing:.08em;padding:7px 18px;border:none;border-radius:6px;cursor:pointer;background:transparent;color:var(--text-muted);transition:all .2s;min-height:40px}
     .mode-btn.active{background:linear-gradient(135deg,var(--purple),var(--blue));color:#fff}
     .mode-btn:hover:not(.active){color:var(--text);background:var(--card-hover)}
-
     .mode-panel{display:none}.mode-panel.active{display:block}
     .wrap{max-width:1380px;margin:0 auto;padding:20px 14px}
-
     .sub-tabs{display:flex;gap:8px;margin-bottom:20px}
     .sub-tab{font-family:var(--fb);font-size:.85rem;letter-spacing:.1em;padding:9px 22px;border:1px solid var(--border);border-radius:var(--r);cursor:pointer;background:var(--card);color:var(--text-muted);transition:all .2s;min-height:44px}
     .sub-tab.active{border-color:var(--purple);color:var(--purple-bright);background:rgba(124,58,237,.1)}
     .sub-tab:hover:not(.active){border-color:var(--border-hi);color:var(--text)}
-
-    .builder{display:none}
-    .builder.active{display:grid;gap:20px}
+    .builder{display:none}.builder.active{display:grid;gap:20px}
     @media(min-width:768px){.builder.active{grid-template-columns:1fr 360px;align-items:start}}
     .builder-sections{display:flex;flex-direction:column;gap:10px}
-
     .sec{background:var(--card);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden}
     .sec-head{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;user-select:none;transition:background .15s}
     .sec-head:hover{background:var(--card-hover)}
@@ -63,25 +41,19 @@
     .sec-title{font-family:var(--fb);font-size:.95rem;letter-spacing:.08em;color:var(--text)}
     .sec-arr{margin-left:auto;color:var(--text-dim);font-size:.75rem;transition:transform .2s}
     .sec.open .sec-arr{transform:rotate(180deg)}
-    .sec-body{display:none;padding:4px 16px 16px}
-    .sec.open .sec-body{display:block}
-
+    .sec-body{display:none;padding:4px 16px 16px}.sec.open .sec-body{display:block}
     .flabel{font-family:var(--fm);font-size:.68rem;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;margin:12px 0 7px}
-
     .chips{display:flex;flex-wrap:wrap;gap:6px}
     .chip{font-family:var(--fs);font-size:.78rem;padding:6px 13px;border:1px solid var(--border);border-radius:18px;background:var(--surface);color:var(--text-muted);cursor:pointer;transition:all .15s;min-height:34px;display:inline-flex;align-items:center}
     @media(max-width:767px){.chip{min-height:42px;padding:8px 14px}}
     .chip:hover{border-color:var(--purple);color:var(--text)}
     .chip.sel{background:rgba(124,58,237,.18);border-color:var(--purple);color:var(--purple-bright)}
-
     .sel-input{width:100%;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:var(--rs);padding:9px 34px 9px 12px;font-family:var(--fs);font-size:.83rem;cursor:pointer;outline:none;min-height:44px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%237070a0' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center}
     .sel-input:focus{border-color:var(--purple)}
     option{background:var(--card)}
-
     .txt-input{width:100%;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:var(--rs);padding:9px 12px;font-family:var(--fs);font-size:.83rem;outline:none;min-height:44px;transition:border-color .15s}
     .txt-input:focus{border-color:var(--purple)}
     .txt-input::placeholder{color:var(--text-dim)}
-
     .tog-row{display:flex;align-items:center;gap:10px;margin:10px 0}
     .tog-lbl{font-size:.83rem;color:var(--text-muted)}
     .tog{position:relative;width:42px;height:23px;flex-shrink:0}
@@ -90,19 +62,15 @@
     .tog-sl:before{content:'';position:absolute;width:17px;height:17px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
     .tog input:checked+.tog-sl{background:var(--purple)}
     .tog input:checked+.tog-sl:before{transform:translateX(19px)}
-
     .char-tabs{display:flex;gap:5px;margin-bottom:10px;flex-wrap:wrap}
     .ctab{font-family:var(--fm);font-size:.72rem;padding:6px 11px;border:1px solid var(--border);border-radius:var(--rs);background:var(--surface);color:var(--text-muted);cursor:pointer;min-height:36px;transition:all .15s}
     .ctab.active{border-color:var(--purple);color:var(--purple-bright);background:rgba(124,58,237,.1)}
-    .cpanel{display:none}
-    .cpanel.active{display:block}
+    .cpanel{display:none}.cpanel.active{display:block}
     .cgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-
     .stepper{display:inline-flex;align-items:center;border:1px solid var(--border);border-radius:var(--rs);overflow:hidden}
     .stp-btn{width:36px;height:36px;background:var(--surface);border:none;color:var(--text-muted);cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:all .15s}
     .stp-btn:hover{background:var(--card-hover);color:var(--text)}
     .stp-val{width:36px;text-align:center;font-family:var(--fm);font-size:.85rem;color:var(--text);background:var(--card);border-left:1px solid var(--border);border-right:1px solid var(--border)}
-
     .preview-panel{position:sticky;top:80px}
     @media(max-width:767px){.preview-panel{position:static;margin-top:20px}}
     .preview-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden}
@@ -113,50 +81,40 @@
     .prev-text{font-family:var(--fm);font-size:.78rem;line-height:1.75;white-space:pre-wrap;word-break:break-word}
     .prev-empty{color:var(--text-dim);font-family:var(--fm);font-size:.73rem;text-align:center;padding:40px 16px}
     .prev-actions{padding:11px 16px;border-top:1px solid var(--border);display:flex;gap:7px;flex-wrap:wrap}
-
-    .hl-shot{color:var(--cyan-bright)}
-    .hl-scene{color:#86efac}
-    .hl-char{color:#fbbf24}
-    .hl-action{color:var(--text)}
-    .hl-cam{color:var(--purple-bright)}
-    .hl-audio{color:#f472b6}
-    .hl-dialogue{color:#fb923c;font-style:italic}
-
+    .hl-shot{color:var(--cyan-bright)}.hl-scene{color:#86efac}.hl-char{color:#fbbf24}
+    .hl-action{color:var(--text)}.hl-cam{color:var(--purple-bright)}
+    .hl-audio{color:#f472b6}.hl-dialogue{color:#fb923c;font-style:italic}
     .btn{font-family:var(--fb);font-size:.82rem;letter-spacing:.05em;padding:9px 16px;border:none;border-radius:var(--rs);cursor:pointer;transition:all .15s;min-height:38px;display:inline-flex;align-items:center;gap:5px}
     .btn-p{background:linear-gradient(135deg,var(--purple),var(--blue));color:#fff}
     .btn-p:hover{opacity:.88;transform:translateY(-1px)}
     .btn-s{background:var(--surface);border:1px solid var(--border);color:var(--text-muted)}
     .btn-s:hover{border-color:var(--purple);color:var(--text)}
+    .btn-rnd{background:rgba(8,145,178,.1);border:1px solid rgba(8,145,178,.35);color:var(--cyan-bright)}
+    .btn-rnd:hover{background:rgba(8,145,178,.2);transform:translateY(-1px)}
     .btn-d{background:rgba(220,38,38,.1);border:1px solid rgba(220,38,38,.3);color:#fca5a5}
     .btn-d:hover{background:rgba(220,38,38,.2)}
     .btn-sm{padding:6px 13px;font-size:.75rem;min-height:32px}
     .btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
-
     .ai-grid{display:grid;gap:18px}
     @media(min-width:768px){.ai-grid{grid-template-columns:1fr 340px;align-items:start}}
     .ai-left,.ai-right{display:flex;flex-direction:column;gap:14px}
     .ai-panel{background:var(--card);border:1px solid var(--border);border-radius:var(--rl);padding:18px}
     .ap-title{font-family:var(--fb);font-size:.82rem;letter-spacing:.12em;color:var(--text-muted);margin-bottom:12px;display:flex;align-items:center;gap:7px}
     .ap-title::before{content:'';width:3px;height:14px;background:linear-gradient(to bottom,var(--purple),var(--cyan));border-radius:2px;flex-shrink:0}
-
     .story-ta{width:100%;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:var(--r);padding:13px 15px;font-family:var(--fs);font-size:.88rem;line-height:1.6;resize:vertical;outline:none;min-height:170px;transition:border-color .15s}
     .story-ta:focus{border-color:var(--purple)}
     .story-ta::placeholder{color:var(--text-dim)}
-
     .out-mode{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
     .omBtn{font-family:var(--fm);font-size:.72rem;letter-spacing:.04em;padding:9px 6px;border:1px solid var(--border);border-radius:var(--rs);background:var(--surface);color:var(--text-muted);cursor:pointer;text-align:center;transition:all .15s;min-height:44px}
     .omBtn.active{border-color:var(--cyan);color:var(--cyan-bright);background:rgba(8,145,178,.1)}
-
     .cnt-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
     .cntBtn{font-family:var(--fm);font-size:.78rem;padding:7px 14px;border:1px solid var(--border);border-radius:var(--rs);background:var(--surface);color:var(--text-muted);cursor:pointer;min-height:38px;transition:all .15s}
     .cntBtn.active{border-color:var(--purple);color:var(--purple-bright);background:rgba(124,58,237,.1)}
     .cnt-custom{font-family:var(--fm);font-size:.78rem;width:68px;padding:7px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);outline:none;min-height:38px;text-align:center}
     .cnt-custom:focus{border-color:var(--purple)}
-
-    .prov-tog{display:flex;background:var(--surface);border-radius:var(--rs);padding:3px;border:1px solid var(--border);margin-bottom:11px}
-    .prov-btn{flex:1;font-family:var(--fm);font-size:.73rem;padding:7px;border:none;border-radius:4px;cursor:pointer;background:transparent;color:var(--text-muted);transition:all .15s;min-height:36px}
+    .prov-tog{display:flex;background:var(--surface);border-radius:var(--rs);padding:3px;border:1px solid var(--border);margin-bottom:11px;gap:2px}
+    .prov-btn{flex:1;font-family:var(--fm);font-size:.7rem;padding:7px 4px;border:none;border-radius:4px;cursor:pointer;background:transparent;color:var(--text-muted);transition:all .15s;min-height:36px;white-space:nowrap}
     .prov-btn.active{background:var(--card);color:var(--text);border:1px solid var(--border)}
-
     .ep-row{display:flex;gap:7px;align-items:stretch}
     .ep-row .txt-input{flex:1}
     .status-row{display:flex;align-items:center;gap:7px;margin-top:8px}
@@ -168,12 +126,12 @@
     .status-txt{font-family:var(--fm);font-size:.68rem;color:var(--text-muted)}
     .model-row{display:flex;gap:7px;align-items:center;margin-top:8px}
     .model-row .sel-input{flex:1}
-
+    .progress-wrap{background:var(--border);border-radius:3px;height:4px;overflow:hidden;margin:8px 0}
+    .progress-bar{height:100%;background:linear-gradient(90deg,var(--purple),var(--cyan));width:0%;transition:width .3s}
     .gen-btn{width:100%;background:linear-gradient(135deg,var(--purple),var(--cyan));color:#fff;border:none;border-radius:var(--r);padding:16px;font-family:var(--fb);font-size:1.05rem;letter-spacing:.15em;cursor:pointer;transition:all .2s;min-height:52px}
     .gen-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(124,58,237,.4)}
     .gen-btn:active{transform:translateY(0)}
     .gen-btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
-
     .results{display:flex;flex-direction:column;gap:12px}
     .pc{background:var(--card);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;transition:border-color .2s}
     .pc:hover{border-color:var(--border-hi)}
@@ -184,29 +142,37 @@
     .pc-text{padding:14px 15px;font-family:var(--fm);font-size:.78rem;line-height:1.75;color:var(--text-muted);white-space:pre-wrap;word-break:break-word}
     .pc-actions{padding:9px 15px;border-top:1px solid var(--border);display:flex;gap:7px}
     .bulk-actions{display:flex;gap:9px;padding:14px 0 6px;border-top:1px solid var(--border);flex-wrap:wrap}
-
     .loading{text-align:center;padding:36px;color:var(--text-muted);font-family:var(--fm);font-size:.82rem}
     .ldots{display:inline-flex;gap:5px;margin-top:11px}
     .ldots span{width:7px;height:7px;border-radius:50%;background:var(--purple);animation:bnd 1.2s infinite}
     .ldots span:nth-child(2){animation-delay:.2s;background:var(--blue)}
     .ldots span:nth-child(3){animation-delay:.4s;background:var(--cyan)}
     @keyframes bnd{0%,80%,100%{transform:scale(.6);opacity:.5}40%{transform:scale(1);opacity:1}}
-
     .err-box{background:rgba(220,38,38,.08);border:1px solid rgba(220,38,38,.3);border-radius:var(--r);padding:14px;color:#fca5a5;font-family:var(--fm);font-size:.78rem;line-height:1.6}
     .err-box strong{color:#f87171;display:block;margin-bottom:5px}
-
     .stream-out{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px;font-family:var(--fm);font-size:.78rem;line-height:1.75;color:var(--text-muted);white-space:pre-wrap;word-break:break-word;max-height:360px;overflow-y:auto}
-
     .toast{position:fixed;bottom:22px;right:22px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:11px 16px;font-family:var(--fm);font-size:.78rem;color:var(--text);z-index:999;transform:translateY(70px);opacity:0;transition:all .3s;pointer-events:none}
     .toast.show{transform:translateY(0);opacity:1}
     .toast.ok{border-color:var(--ok);color:#6ee7b7}
     .toast.err{border-color:var(--err);color:#fca5a5}
-
     ::-webkit-scrollbar{width:5px;height:5px}
     ::-webkit-scrollbar-track{background:var(--surface)}
     ::-webkit-scrollbar-thumb{background:var(--border-hi);border-radius:3px}
-
-    .mt8{margin-top:8px}.hint{font-family:var(--fm);font-size:.68rem;color:var(--text-dim);margin-top:5px}
+    .mt8{margin-top:8px}.hint{font-family:var(--fm);font-size:.68rem;color:var(--text-dim);margin-top:5px;line-height:1.5}
+    /* WebGPU model cards */
+    .wmodel-cards{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}
+    .wmodel-card{border:1px solid var(--border);border-radius:var(--r);padding:11px 13px;cursor:pointer;transition:all .18s;background:var(--surface);display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .wmodel-card:hover:not(.wm-active){border-color:var(--border-hi)}
+    .wmodel-card.wm-active{border-color:var(--purple);background:rgba(124,58,237,.07)}
+    .wmodel-card.wm-loaded{border-color:var(--ok)!important;background:rgba(5,150,105,.06)!important}
+    .wmodel-size{font-family:var(--fb);font-size:1.1rem;color:var(--purple-bright);line-height:1}
+    .wmodel-name{font-family:var(--fm);font-size:.75rem;color:var(--text);margin-top:2px}
+    .wmodel-repo{font-family:var(--fm);font-size:.6rem;color:var(--text-dim);margin-top:2px;word-break:break-all}
+    .wmodel-tags{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+    .wmtag{font-family:var(--fm);font-size:.6rem;padding:2px 7px;border-radius:8px;white-space:nowrap}
+    .wmtag-cache{background:rgba(5,150,105,.15);color:#6ee7b7;border:1px solid rgba(5,150,105,.35)}
+    .wmtag-nocache{background:var(--card);color:var(--text-dim);border:1px solid var(--border)}
+    .wmtag-vram{background:rgba(8,145,178,.2);color:var(--cyan-bright);border:1px solid rgba(8,145,178,.4)}
   </style>
 </head>
 <body>
@@ -214,13 +180,13 @@
 <header>
   <div class="logo">LTX PROMPT BUILDER</div>
   <div class="mode-switcher">
-    <button class="mode-btn active" onclick="setMode('manual')">MANUALE</button>
-    <button class="mode-btn" onclick="setMode('ai')">AI STORY</button>
+    <button class="mode-btn" data-mode="manual" onclick="setMode('manual')">MANUALE</button>
+    <button class="mode-btn active" data-mode="ai" onclick="setMode('ai')">AI STORY</button>
   </div>
 </header>
 
 <!-- MANUAL MODE -->
-<div id="mode-manual" class="mode-panel active">
+<div id="mode-manual" class="mode-panel">
   <div class="wrap">
     <div class="sub-tabs">
       <button class="sub-tab active" onclick="setTab('ltx')">LTX 2.3 VIDEO</button>
@@ -314,11 +280,10 @@
             <div class="chips" id="ltx-ambient"></div>
             <div class="tog-row mt8">
               <label class="tog"><input type="checkbox" id="ltx-dial-tog" onchange="toggleDialogue(this)"><span class="tog-sl"></span></label>
-              <span class="tog-lbl">Aggiungi dialogo in italiano</span>
+              <span class="tog-lbl">Aggiungi dialogo</span>
             </div>
             <div id="ltx-dial-wrap" style="display:none">
-              <input type="text" class="txt-input mt8" id="ltx-dialogue" placeholder='es: Aspetta! she whispers' oninput="ltxSt.dialogue=this.value;ltxUpdate();saveToStorage()">
-              <div class="hint">Scrivi in italiano &#8212; verr&#224; embedato nel prompt come dialogo del personaggio</div>
+              <input type="text" class="txt-input mt8" id="ltx-dialogue" placeholder='es: "Aspetta!" she whispers' oninput="ltxSt.dialogue=this.value;ltxUpdate();saveToStorage()">
             </div>
           </div>
         </div>
@@ -337,6 +302,7 @@
           </div>
           <div class="prev-actions">
             <button class="btn btn-p" onclick="copyPrompt('ltx')">&#10008; Copia</button>
+            <button class="btn btn-rnd" onclick="randomizeLTX()">&#9860; Random</button>
             <button class="btn btn-s" onclick="savePrompt('ltx')">&#8595; .txt</button>
             <button class="btn btn-d" onclick="resetBuilder('ltx')">&#8635; Reset</button>
           </div>
@@ -410,22 +376,6 @@
           </div>
         </div>
 
-        <div class="sec open">
-          <div class="sec-head" onclick="toggleSec(this)">
-            <div class="sec-num">6</div><div class="sec-title">PARAMETRI TECNICI</div><div class="sec-arr">▼</div>
-          </div>
-          <div class="sec-body">
-            <div class="flabel">Risoluzione</div>
-            <div class="chips" id="zi-res"></div>
-            <div class="flabel">Steps</div>
-            <div class="chips" id="zi-steps"></div>
-            <div class="flabel">Sampler</div>
-            <div class="chips" id="zi-sampler"></div>
-            <div class="flabel">CFG Scale</div>
-            <div class="chips" id="zi-cfg"></div>
-          </div>
-        </div>
-
       </div>
 
       <div class="preview-panel">
@@ -440,6 +390,7 @@
           </div>
           <div class="prev-actions">
             <button class="btn btn-p" onclick="copyPrompt('zi')">&#10008; Copia</button>
+            <button class="btn btn-rnd" onclick="randomizeZI()">&#9860; Random</button>
             <button class="btn btn-s" onclick="savePrompt('zi')">&#8595; .txt</button>
             <button class="btn btn-d" onclick="resetBuilder('zi')">&#8635; Reset</button>
           </div>
@@ -449,8 +400,8 @@
   </div>
 </div>
 
-<!-- AI STORY MODE -->
-<div id="mode-ai" class="mode-panel">
+<!-- AI STORY MODE (default active) -->
+<div id="mode-ai" class="mode-panel active">
   <div class="wrap">
     <div class="ai-grid">
       <div class="ai-left">
@@ -505,37 +456,86 @@
           <div class="prov-tog">
             <button class="prov-btn active" data-prov="ollama" onclick="setProvider(this)">Ollama</button>
             <button class="prov-btn" data-prov="lmstudio" onclick="setProvider(this)">LM Studio</button>
+            <button class="prov-btn" data-prov="webgpu" onclick="setProvider(this)">WebGPU</button>
           </div>
-          <div class="flabel" style="margin-top:0">Endpoint URL</div>
-          <div class="ep-row">
-            <input type="text" class="txt-input" id="ai-endpoint" value="http://localhost:11434" oninput="saveEndpoint()">
+
+          <!-- Ollama / LM Studio -->
+          <div id="ep-panel">
+            <div class="flabel" style="margin-top:0">Endpoint URL</div>
+            <div class="ep-row">
+              <input type="text" class="txt-input" id="ai-endpoint" value="http://localhost:11434" oninput="saveEndpoint()">
+            </div>
+            <div class="status-row">
+              <div class="dot" id="conn-dot"></div>
+              <div class="status-txt" id="conn-txt">Non connesso</div>
+            </div>
+            <div class="model-row">
+              <select class="sel-input" id="model-select" onchange="saveModel()">
+                <option value="">&#8212; Carica prima i modelli &#8212;</option>
+              </select>
+              <button class="btn btn-s" onclick="loadModels()" style="flex-shrink:0;white-space:nowrap">Carica</button>
+            </div>
+            <div class="hint" style="margin-top:8px;color:var(--warn)">CORS: avvia Ollama con <code style="color:var(--purple-bright)">OLLAMA_ORIGINS=* ollama serve</code></div>
           </div>
-          <div class="status-row">
-            <div class="dot" id="conn-dot"></div>
-            <div class="status-txt" id="conn-txt">Non connesso</div>
-          </div>
-          <div class="model-row">
-            <select class="sel-input" id="model-select" onchange="saveModel()">
-              <option value="">&#8212; Carica prima i modelli &#8212;</option>
-            </select>
-            <button class="btn btn-s" onclick="loadModels()" style="flex-shrink:0;white-space:nowrap">Carica</button>
+
+          <!-- WebGPU -->
+          <div id="wgpu-panel" style="display:none">
+            <div class="wmodel-cards">
+              <div class="wmodel-card wm-active" data-wmodel="HuggingFaceTB/SmolLM2-1.7B-Instruct" data-wdtype="q4f16" onclick="setWGPUModel(this)">
+                <div>
+                  <div class="wmodel-size">~2 GB</div>
+                  <div class="wmodel-name">SmolLM2-1.7B-Instruct</div>
+                  <div class="wmodel-repo">HuggingFaceTB/SmolLM2-1.7B-Instruct</div>
+                </div>
+                <div class="wmodel-tags">
+                  <span class="wmtag wmtag-nocache" id="wbadge-0">non in cache</span>
+                  <span class="wmtag wmtag-vram" id="wvram-0" style="display:none">IN VRAM</span>
+                </div>
+              </div>
+              <div class="wmodel-card" data-wmodel="onnx-community/Qwen2.5-3B-Instruct" data-wdtype="q4f16" onclick="setWGPUModel(this)">
+                <div>
+                  <div class="wmodel-size">~4 GB</div>
+                  <div class="wmodel-name">Qwen2.5-3B-Instruct</div>
+                  <div class="wmodel-repo">onnx-community/Qwen2.5-3B-Instruct</div>
+                </div>
+                <div class="wmodel-tags">
+                  <span class="wmtag wmtag-nocache" id="wbadge-1">non in cache</span>
+                  <span class="wmtag wmtag-vram" id="wvram-1" style="display:none">IN VRAM</span>
+                </div>
+              </div>
+              <div class="wmodel-card" data-wmodel="onnx-community/Qwen2.5-7B-Instruct" data-wdtype="q4f16" onclick="setWGPUModel(this)">
+                <div>
+                  <div class="wmodel-size">~6 GB</div>
+                  <div class="wmodel-name">Qwen2.5-7B-Instruct</div>
+                  <div class="wmodel-repo">onnx-community/Qwen2.5-7B-Instruct</div>
+                </div>
+                <div class="wmodel-tags">
+                  <span class="wmtag wmtag-nocache" id="wbadge-2">non in cache</span>
+                  <span class="wmtag wmtag-vram" id="wvram-2" style="display:none">IN VRAM</span>
+                </div>
+              </div>
+            </div>
+            <div class="status-row">
+              <div class="dot" id="wgpu-dot"></div>
+              <div class="status-txt" id="wgpu-txt">Seleziona un modello</div>
+            </div>
+            <div class="progress-wrap" style="margin-top:8px">
+              <div class="progress-bar" id="wgpu-bar"></div>
+            </div>
+            <div id="wgpu-prog-label" class="hint" style="min-height:14px"></div>
+            <button class="btn btn-p" style="width:100%;justify-content:center;margin-top:8px" onclick="loadWebGPUModel()" id="wgpu-load-btn">&#8595; CARICA IN VRAM</button>
+            <button class="btn btn-d" onclick="unloadWebGPUModel()" id="wgpu-unload-btn" style="display:none;width:100%;justify-content:center;margin-top:6px">&#9632; SCARICA DALLA VRAM</button>
+            <div class="hint" style="margin-top:8px">Richiede Chrome 113+. Prima esecuzione: scarica il modello da HuggingFace (una volta sola, poi resta in cache).</div>
           </div>
         </div>
 
         <div class="ai-panel">
-          <div class="ap-title">SUGGERIMENTI</div>
+          <div class="ap-title">NOTE</div>
           <div style="font-family:var(--fm);font-size:.72rem;color:var(--text-dim);line-height:1.75">
-            <div style="color:var(--text-muted);margin-bottom:6px">Sistema prompt incluso automaticamente:</div>
-            <div>&#10003; Regole lingua (EN / IT dialoghi)</div>
-            <div>&#10003; Prompt auto-contenuti</div>
+            <div>&#10003; Prompt su singola riga</div>
+            <div>&#10003; Auto-contenuti e dettagliati</div>
             <div>&#10003; Struttura cinematografica</div>
-            <div>&#10003; Arco narrativo</div>
-            <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
-              <div style="color:var(--warn);margin-bottom:5px">Ollama non risponde?</div>
-              <div>1. Assicurati che Ollama sia avviato</div>
-              <div>2. Abilita CORS:</div>
-              <div style="margin-top:4px;color:var(--purple-bright)">OLLAMA_ORIGINS=* ollama serve</div>
-            </div>
+            <div>&#10003; Arco narrativo coerente</div>
           </div>
         </div>
 
@@ -545,6 +545,14 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- transformers.js via CDN for WebGPU inference -->
+<script type="module">
+  import { pipeline as hfPipeline, env as hfEnv, TextStreamer } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3';
+  hfEnv.allowLocalModels = false;
+  window._hf = { pipeline: hfPipeline, env: hfEnv, TextStreamer: TextStreamer };
+  document.dispatchEvent(new CustomEvent('hf-ready'));
+</script>
 
 <script>
 // ===================== DATA =====================
@@ -718,27 +726,6 @@ const ZI = {
     {v:"worm's eye view",l:"Worm's Eye"},{v:'dutch angle',l:'Dutch Angle'},
     {v:'aerial perspective',l:'Aerial'},{v:'isometric',l:'Isometric'},
   ],
-  res:[
-    {v:'512x512',l:'512\u00b2'},{v:'768x768',l:'768\u00b2'},
-    {v:'1024x1024',l:'1024\u00b2'},{v:'1024x768',l:'1024\u00d7768'},
-    {v:'768x1024',l:'768\u00d71024'},{v:'1280x720',l:'1280\u00d7720'},
-    {v:'1920x1080',l:'1920\u00d71080'},
-  ],
-  steps:[
-    {v:'20',l:'20 steps'},{v:'30',l:'30 steps'},
-    {v:'40',l:'40 steps'},{v:'50',l:'50 steps'},
-  ],
-  sampler:[
-    {v:'DPM++ 2M Karras',l:'DPM++ 2M Karras'},
-    {v:'DDIM',l:'DDIM'},{v:'Euler a',l:'Euler a'},
-    {v:'LMS',l:'LMS'},{v:'DPM++ SDE Karras',l:'DPM++ SDE'},
-  ],
-  cfg:[
-    {v:'5',l:'CFG 5'},{v:'7',l:'CFG 7'},
-    {v:'7.5',l:'CFG 7.5'},{v:'8',l:'CFG 8'},
-    {v:'9',l:'CFG 9'},{v:'10',l:'CFG 10'},
-    {v:'12',l:'CFG 12'},
-  ],
 };
 
 const CHAR_OPTS = {
@@ -750,66 +737,39 @@ const CHAR_OPTS = {
   expression:[{v:'',l:'\u2014'},{v:'neutral',l:'Neutral'},{v:'determined',l:'Determined'},{v:'fearful',l:'Fearful'},{v:'joyful',l:'Joyful'},{v:'angry',l:'Angry'},{v:'sorrowful',l:'Sorrowful'},{v:'pensive',l:'Pensive'},{v:'surprised',l:'Surprised'},{v:'stoic',l:'Stoic'}],
 };
 
-const SYSTEM_PROMPT = `You are an expert cinematographer and AI prompt engineer. You create ultra-detailed, self-contained video and image prompts for LTX-2.3 and Z-Image models.
+const SYSTEM_PROMPT = `You are an expert cinematographer and AI prompt engineer specializing in LTX-Video and image generation.
 
 CRITICAL RULES:
 
-1. LANGUAGE:
-   - LTX-2.3 video prompts: ALL narration and description in ENGLISH. Any spoken dialogue by characters MUST be in ITALIAN, placed directly in the prompt text without labels (e.g., write: "Aspetta!" she whispers — NOT: (Dialogue: "Aspetta!"))
-   - Z-Image image prompts: ENGLISH ONLY, no dialogue.
+1. LANGUAGE: All prompts in ENGLISH. Any spoken dialogue by characters must be in Italian, inline (e.g.: "Aspetta!" she whispers).
 
-2. SELF-CONTAINED PROMPTS (MOST IMPORTANT RULE):
-   Every single prompt must be 100% autonomous and self-sufficient. Even if it is prompt #7 of 20, it must describe EVERYTHING from scratch:
-   - Full character description every time (appearance, clothing, hair, expression, posture, distinguishing features)
-   - Full scene description every time (location, lighting, atmosphere, textures)
-   - Full camera setup every time
-   Each prompt must be so detailed and complete that the model can generate exactly that video/image even WITHOUT seeing any previous prompt or reference image. The prompt alone must make the result inevitable.
+2. SINGLE LINE FORMAT (MOST IMPORTANT):
+   Each prompt MUST be written as a SINGLE LINE with NO line breaks inside it.
+   - Separate all elements with commas or natural conjunctions
+   - NO internal periods — end with exactly ONE period at the very end
+   - Every prompt goes on its own line in the output
+   - Multiple prompts = multiple lines, each ending with a period
 
-3. CINEMATOGRAPHY & STORYTELLING:
-   When generating multiple prompts from a story, create a proper narrative arc:
-   - Plan shot variety: establishing shots, medium shots, close-ups, detail shots
-   - Vary camera movements: dolly, pan, tilt, orbit, tracking, static, zoom
-   - Create scene progression: opening → development → climax → resolution
-   - Each prompt is one distinct shot/scene in the sequence
-   - Include time/light continuity when appropriate (e.g., same golden hour across consecutive shots)
+3. SELF-CONTAINED PROMPTS:
+   Every prompt must describe EVERYTHING from scratch: full character description, scene, lighting, camera, atmosphere.
+   The prompt alone must make the result inevitable — never reference other prompts.
 
-4. LTX-2.3 PROMPT STRUCTURE (for video):
-   Write as a single flowing paragraph of 4-8 sentences in present tense:
-   - Establish the shot (scale, angle, lens)
-   - Set the scene (lighting, color palette, textures, atmosphere, mood)
-   - Describe the action (what happens from start to finish in the clip)
-   - Define characters (FULL visual description every time)
-   - Specify camera movement (how and when the camera moves)
-   - Optional: describe audio (ambient sounds, music, speech with Italian dialogue)
+4. LTX-2.3 VIDEO PROMPT STRUCTURE (single line):
+   [shot type and angle], [visual genre/style], [location and environment], [lighting and color palette], [time of day], [full character description with appearance and clothing], [action from start to finish], [camera movement], [audio/sound design]
 
-5. Z-IMAGE PROMPT STRUCTURE (for images):
-   Write as a flowing natural language description:
-   - Subject and action clearly defined
-   - Environment and setting described
-   - Lighting quality and direction specified
-   - Camera/lens or artistic medium included
-   - Composition notes (framing, depth of field, perspective)
-   - Technical settings (resolution, steps, sampler, CFG)
-   - All in ENGLISH, no dialogue needed
+5. Z-IMAGE PROMPT STRUCTURE (single line):
+   [subject and action], [environment], [lighting quality and direction], [lens/artistic medium], [composition and framing], [depth of field], [perspective]
 
-6. WHAT TO AVOID:
-   - Internal emotional states ("she feels sad") → show emotion visually instead
-   - References to other prompts ("same character as before")
-   - Readable text or logos
-   - Overloaded scenes with too many simultaneous actions
-   - Vague adjectives without visual specifics
+6. NARRATIVE ARC: When generating multiple prompts, create a proper story arc with varied shot sizes, camera movements, and scene progression.
 
 7. OUTPUT FORMAT:
-   When generating multiple prompts, output them as:
    --- PROMPT 1: [SHORT TITLE] ---
-   [the prompt text]
+   [single line prompt ending with a period]
 
    --- PROMPT 2: [SHORT TITLE] ---
-   [the prompt text]
+   [single line prompt ending with a period]
 
-   etc.
-
-Generate prompts that are so vivid, specific, and complete that any person reading them can immediately visualize exactly what will be generated — and the model has no choice but to produce exactly that result.`;
+Generate prompts so vivid and specific that the model has no choice but to produce exactly the intended result.`;
 
 // ===================== STATE =====================
 
@@ -831,13 +791,17 @@ const ltxSt = {
 const ziSt = {
   subjectType:'',subjectAction:'',env:'',lq:'',ld:'',lt:'',
   lens:'',style:'',framing:'',dof:'',persp:'',
-  res:'1024x1024',steps:'30',sampler:'DPM++ 2M Karras',cfg:'7',
 };
 
 const aiSt = {
-  provider:'ollama',endpoint:'http://localhost:11434',
-  model:'',outputMode:'ltx',count:5,
-  models:[],generating:false,results:[],
+  provider:'ollama', endpoint:'http://localhost:11434', model:'', models:[],
+  outputMode:'ltx', count:5, generating:false, results:[],
+};
+
+const wgpuSt = {
+  model:'HuggingFaceTB/SmolLM2-1.7B-Instruct',
+  dtype:'q4f16',
+  pipeline:null,loadedModel:'',loading:false,
 };
 
 // ===================== INIT =====================
@@ -869,10 +833,6 @@ function init() {
   buildChips('zi-framing',ZI.framing,'framing','zi',false);
   buildChips('zi-dof',ZI.dof,'dof','zi',false);
   buildChips('zi-persp',ZI.persp,'persp','zi',false);
-  buildChips('zi-res',ZI.res,'res','zi',false);
-  buildChips('zi-steps',ZI.steps,'steps','zi',false);
-  buildChips('zi-sampler',ZI.sampler,'sampler','zi',false);
-  buildChips('zi-cfg',ZI.cfg,'cfg','zi',false);
 
   renderCharTabs();
   renderCharPanels();
@@ -894,19 +854,16 @@ function buildChips(cid, data, field, builder, multi) {
         btn.classList.toggle('sel');
         const arr = ltxSt[field];
         const idx = arr.indexOf(item.v);
-        if (idx === -1) arr.push(item.v);
-        else arr.splice(idx, 1);
+        if (idx === -1) arr.push(item.v); else arr.splice(idx, 1);
         ltxUpdate();
       } else {
         const alreadySel = btn.classList.contains('sel');
         el.querySelectorAll('.chip').forEach(function(c){c.classList.remove('sel');});
         if (!alreadySel) {
           btn.classList.add('sel');
-          if (builder === 'ltx') ltxSt[field] = item.v;
-          else ziSt[field] = item.v;
+          if (builder === 'ltx') ltxSt[field] = item.v; else ziSt[field] = item.v;
         } else {
-          if (builder === 'ltx') ltxSt[field] = '';
-          else ziSt[field] = '';
+          if (builder === 'ltx') ltxSt[field] = ''; else ziSt[field] = '';
         }
         if (builder === 'ltx') ltxUpdate(); else ziUpdate();
       }
@@ -965,10 +922,7 @@ function changeCharCount(d) {
   ltxSt.charCount = Math.max(1, Math.min(4, ltxSt.charCount + d));
   document.getElementById('char-count-val').textContent = ltxSt.charCount;
   if (activeCharTab >= ltxSt.charCount) activeCharTab = ltxSt.charCount - 1;
-  renderCharTabs();
-  renderCharPanels();
-  ltxUpdate();
-  saveToStorage();
+  renderCharTabs(); renderCharPanels(); ltxUpdate(); saveToStorage();
 }
 
 // ===================== PROMPT BUILDERS =====================
@@ -1006,10 +960,10 @@ function buildLTXLines() {
   if (s.subject) ap.push(s.subject);
   if (s.movements.length) ap.push(s.movements.join(' and '));
   if (s.moment) ap.push(s.moment);
-  if (ap.length) lines.push({t:'action', tx:ap.join('. ')});
+  if (ap.length) lines.push({t:'action', tx:ap.join(', ')});
 
   const cp2 = [];
-  if (s.cammovement) cp2.push('Camera ' + s.cammovement);
+  if (s.cammovement) cp2.push('camera ' + s.cammovement);
   if (s.focus) cp2.push(s.focus);
   if (cp2.length) lines.push({t:'cam', tx:cp2.join(', ')});
 
@@ -1020,7 +974,7 @@ function buildLTXLines() {
     const d = s.dialogue.trim();
     audioP.push((d.charAt(0) === '"' ? d : '"'+d+'"'));
   }
-  if (audioP.length) lines.push({t: hasD ? 'dialogue' : 'audio', tx:audioP.join('. ')});
+  if (audioP.length) lines.push({t: hasD ? 'dialogue' : 'audio', tx:audioP.join(', ')});
 
   if (s.transition) lines.push({t:'action', tx:s.transition});
 
@@ -1055,19 +1009,13 @@ function buildZILines() {
   if (s.persp) comp.push(s.persp + ' perspective');
   if (comp.length) lines.push({t:'cam', tx:comp.join(', ')});
 
-  const tech = [];
-  if (s.res) tech.push(s.res);
-  if (s.steps) tech.push(s.steps + ' steps');
-  if (s.sampler) tech.push(s.sampler);
-  if (s.cfg) tech.push('CFG ' + s.cfg);
-  if (tech.length) lines.push({t:'action', tx:tech.join(', ')});
-
   return lines;
 }
 
+// Single line: parts joined with ", " and ending with "."
 function linesToText(lines) {
   if (!lines.length) return '';
-  return lines.map(function(l){return l.tx;}).join('\n') + '.';
+  return lines.map(function(l){return l.tx;}).join(', ') + '.';
 }
 
 function renderPreview(lines, textEl, emptyEl) {
@@ -1080,9 +1028,9 @@ function renderPreview(lines, textEl, emptyEl) {
   const clsMap = {shot:'hl-shot',scene:'hl-scene',char:'hl-char',action:'hl-action',cam:'hl-cam',audio:'hl-audio',dialogue:'hl-dialogue'};
   textEl.innerHTML = lines.map(function(l, i){
     const cls = clsMap[l.t] || 'hl-action';
-    const suf = i === lines.length - 1 ? '.' : '';
-    return '<span class="'+cls+'">'+esc(l.tx)+suf+'</span>';
-  }).join('\n');
+    const sep = i === lines.length - 1 ? '.' : ', ';
+    return '<span class="'+cls+'">'+esc(l.tx)+sep+'</span>';
+  }).join('');
 }
 
 function esc(s) {
@@ -1098,14 +1046,97 @@ function toggleDialogue(el) {
   ltxUpdate();
 }
 
+// ===================== RANDOM =====================
+
+function randomizeLTX() {
+  const pick = function(arr) { return arr[Math.floor(Math.random()*arr.length)].v; };
+  const may = function(arr) { return Math.random()>0.35 ? pick(arr) : ''; };
+  const nonEmpty = function(arr) { return arr.filter(function(o){return o.v;}); };
+
+  document.querySelectorAll('#b-ltx .chip').forEach(function(c){c.classList.remove('sel');});
+
+  ltxSt.shot = pick(LTX.shot);
+  ltxSt.genre = may(LTX.genre);
+  ltxSt.location = pick(LTX.location);
+  ltxSt.lighting = may(LTX.lighting);
+  ltxSt.palette = may(LTX.palette);
+  ltxSt.timeofday = pick(LTX.timeofday);
+  ltxSt.opening = pick(LTX.opening);
+  ltxSt.subject = pick(LTX.subject);
+  ltxSt.movements = [];
+  var movPool = LTX.movements.slice();
+  var numMov = 1 + (Math.random()>0.5?1:0);
+  for (var i=0; i<numMov && movPool.length; i++) {
+    var idx = Math.floor(Math.random()*movPool.length);
+    ltxSt.movements.push(movPool.splice(idx,1)[0].v);
+  }
+  ltxSt.moment = may(LTX.moment);
+  ltxSt.transition = may(LTX.transition);
+  ltxSt.cammovement = pick(LTX.cammovement);
+  ltxSt.focus = may(LTX.focus);
+  ltxSt.ambient = may(LTX.ambient);
+
+  var c = ltxSt.chars[0];
+  c.gender = pick(nonEmpty(CHAR_OPTS.gender));
+  c.age = pick(nonEmpty(CHAR_OPTS.age));
+  c.build = may(nonEmpty(CHAR_OPTS.build));
+  c.hair = pick(nonEmpty(CHAR_OPTS.hair));
+  c.clothing = pick(nonEmpty(CHAR_OPTS.clothing));
+  c.expression = pick(nonEmpty(CHAR_OPTS.expression));
+
+  applyChip('ltx-shot', ltxSt.shot);
+  applyChip('ltx-genre', ltxSt.genre);
+  applyChip('ltx-location', ltxSt.location);
+  applyChip('ltx-lighting', ltxSt.lighting);
+  applyChip('ltx-palette', ltxSt.palette);
+  applyChip('ltx-timeofday', ltxSt.timeofday);
+  applyChip('ltx-opening', ltxSt.opening);
+  applyChip('ltx-subject', ltxSt.subject);
+  applyChips('ltx-movements', ltxSt.movements);
+  applyChip('ltx-moment', ltxSt.moment);
+  applyChip('ltx-transition', ltxSt.transition);
+  applyChip('ltx-cammovement', ltxSt.cammovement);
+  applyChip('ltx-focus', ltxSt.focus);
+  applyChip('ltx-ambient', ltxSt.ambient);
+
+  renderCharPanels();
+  ltxUpdate();
+  saveToStorage();
+  showToast('Prompt randomico generato!', 'ok');
+}
+
+function randomizeZI() {
+  var pick = function(arr){ return arr[Math.floor(Math.random()*arr.length)].v; };
+  var may = function(arr){ return Math.random()>0.35 ? pick(arr) : ''; };
+
+  document.querySelectorAll('#b-zimage .chip').forEach(function(c){c.classList.remove('sel');});
+
+  ziSt.subjectType = pick(ZI.subjectType);
+  ziSt.subjectAction = may(ZI.subjectAction);
+  ziSt.env = pick(ZI.env);
+  ziSt.lq = may(ZI.lq);
+  ziSt.ld = may(ZI.ld);
+  ziSt.lt = may(ZI.lt);
+  ziSt.lens = may(ZI.lens);
+  ziSt.style = pick(ZI.style);
+  ziSt.framing = may(ZI.framing);
+  ziSt.dof = may(ZI.dof);
+  ziSt.persp = may(ZI.persp);
+
+  var idmap = {subjectType:'zi-subject-type',subjectAction:'zi-subject-action',env:'zi-env',lq:'zi-lq',ld:'zi-ld',lt:'zi-lt',lens:'zi-lens',style:'zi-style',framing:'zi-framing',dof:'zi-dof',persp:'zi-persp'};
+  Object.keys(idmap).forEach(function(f){ applyChip(idmap[f], ziSt[f]); });
+
+  ziUpdate();
+  saveToStorage();
+  showToast('Prompt randomico generato!', 'ok');
+}
+
 // ===================== UI CONTROLS =====================
 
 function setMode(mode) {
   document.querySelectorAll('.mode-panel').forEach(function(p){p.classList.remove('active');});
   document.getElementById('mode-'+mode).classList.add('active');
-  document.querySelectorAll('.mode-btn').forEach(function(b){
-    b.classList.toggle('active', (mode==='manual'&&b.textContent.includes('MANUALE'))||(mode==='ai'&&b.textContent.includes('AI')));
-  });
+  document.querySelectorAll('.mode-btn').forEach(function(b){b.classList.toggle('active', b.dataset.mode===mode);});
 }
 
 function setTab(tab) {
@@ -1130,53 +1161,195 @@ function setCount(btn) {
 }
 
 function setCustomCount(el) {
-  const n = parseInt(el.value);
+  var n = parseInt(el.value);
   if (n > 0) { document.querySelectorAll('.cntBtn').forEach(function(b){b.classList.remove('active');}); aiSt.count = n; }
 }
+
+// ===================== PROVIDER / CONN =====================
 
 function setProvider(btn) {
   document.querySelectorAll('.prov-btn').forEach(function(b){b.classList.remove('active');});
   btn.classList.add('active');
   aiSt.provider = btn.dataset.prov;
-  const def = {ollama:'http://localhost:11434',lmstudio:'http://localhost:1234'};
-  document.getElementById('ai-endpoint').value = def[aiSt.provider];
-  aiSt.endpoint = def[aiSt.provider];
-  resetConn();
+  var isWebGPU = aiSt.provider === 'webgpu';
+  document.getElementById('ep-panel').style.display = isWebGPU ? 'none' : 'block';
+  document.getElementById('wgpu-panel').style.display = isWebGPU ? 'block' : 'none';
+  if (!isWebGPU) {
+    var def = {ollama:'http://localhost:11434', lmstudio:'http://localhost:1234'};
+    document.getElementById('ai-endpoint').value = def[aiSt.provider];
+    aiSt.endpoint = def[aiSt.provider];
+    resetConn();
+  }
   saveToStorage();
 }
 
 function saveEndpoint() { aiSt.endpoint = document.getElementById('ai-endpoint').value.trim(); resetConn(); saveToStorage(); }
 function saveModel() { aiSt.model = document.getElementById('model-select').value; saveToStorage(); }
-
 function resetConn() {
   setConn('','Non connesso');
-  aiSt.models = [];
   document.getElementById('model-select').innerHTML = '<option value="">\u2014 Carica prima i modelli \u2014</option>';
 }
-
 function setConn(state, msg) {
   document.getElementById('conn-dot').className = 'dot'+(state?' '+state:'');
   document.getElementById('conn-txt').textContent = msg;
 }
 
+// ===================== WEBGPU =====================
+
+// Track which models were successfully downloaded (survives page reload)
+var WMODELS = [
+  {id:'HuggingFaceTB/SmolLM2-1.7B-Instruct', dtype:'q4f16'},
+  {id:'onnx-community/Qwen2.5-3B-Instruct',   dtype:'q4f16'},
+  {id:'onnx-community/Qwen2.5-7B-Instruct',   dtype:'q4f16'},
+];
+
+function getCachedModels() {
+  try { return JSON.parse(localStorage.getItem('ltxpb3_wgpu_cached') || '[]'); } catch(e) { return []; }
+}
+function markModelCached(modelId) {
+  var c = getCachedModels();
+  if (c.indexOf(modelId) === -1) { c.push(modelId); localStorage.setItem('ltxpb3_wgpu_cached', JSON.stringify(c)); }
+}
+function updateCacheBadges() {
+  var cached = getCachedModels();
+  WMODELS.forEach(function(m, i) {
+    var badge = document.getElementById('wbadge-'+i);
+    if (!badge) return;
+    var isLoaded = wgpuSt.loadedModel === m.id;
+    var isCached = cached.indexOf(m.id) > -1;
+    var vramTag = document.getElementById('wvram-'+i);
+    if (vramTag) vramTag.style.display = isLoaded ? 'inline' : 'none';
+    badge.className = 'wmtag ' + (isCached ? 'wmtag-cache' : 'wmtag-nocache');
+    badge.textContent = isCached ? 'in cache' : 'non in cache';
+    var card = badge.closest('.wmodel-card');
+    if (card) card.classList.toggle('wm-loaded', isLoaded);
+  });
+}
+
+function setWGPUModel(btn) {
+  document.querySelectorAll('.wmodel-card').forEach(function(c){c.classList.remove('wm-active');});
+  btn.classList.add('wm-active');
+  wgpuSt.model = btn.dataset.wmodel;
+  wgpuSt.dtype = btn.dataset.wdtype || 'q4f16';
+  var isAlreadyLoaded = wgpuSt.loadedModel === wgpuSt.model;
+  setWGPUStatus(isAlreadyLoaded ? 'ok' : '', isAlreadyLoaded ? 'Modello in VRAM: '+wgpuSt.model.split('/').pop() : 'Pronto per caricare', isAlreadyLoaded ? 100 : 0);
+  document.getElementById('wgpu-load-btn').style.display = isAlreadyLoaded ? 'none' : 'flex';
+  document.getElementById('wgpu-unload-btn').style.display = isAlreadyLoaded ? 'flex' : 'none';
+}
+
+async function loadWebGPUModel() {
+  if (!window._hf) { showToast('Libreria AI in caricamento, riprova','err'); return; }
+  if (wgpuSt.loading) return;
+  if (!navigator.gpu) { setWGPUStatus('err','WebGPU non supportato — usa Chrome 113+'); showToast('WebGPU non supportato','err'); return; }
+
+  wgpuSt.loading = true;
+  var loadBtn = document.getElementById('wgpu-load-btn');
+  loadBtn.disabled = true;
+  var shortName = wgpuSt.model.split('/').pop();
+  setWGPUStatus('spin', 'Caricamento '+shortName+'...', 0);
+  document.getElementById('wgpu-prog-label').textContent = '';
+
+  try {
+    wgpuSt.pipeline = await window._hf.pipeline('text-generation', wgpuSt.model, {
+      device: 'webgpu',
+      dtype: wgpuSt.dtype || 'q4f16',
+      progress_callback: function(p) {
+        if (p.status === 'progress' && p.total) {
+          var pct = Math.round((p.loaded / p.total) * 100);
+          var fname = p.file ? p.file.split('/').pop() : '';
+          setWGPUStatus('spin', fname + ' ' + pct + '%', pct);
+          document.getElementById('wgpu-prog-label').textContent = fname;
+        } else if (p.status === 'done') {
+          setWGPUStatus('spin', 'Inizializzazione WebGPU...', 99);
+        }
+      }
+    });
+    wgpuSt.loadedModel = wgpuSt.model;
+    markModelCached(wgpuSt.model);
+    updateCacheBadges();
+    setWGPUStatus('ok', '\u2713 In VRAM: '+shortName, 100);
+    document.getElementById('wgpu-prog-label').textContent = '';
+    loadBtn.style.display = 'none';
+    document.getElementById('wgpu-unload-btn').style.display = 'flex';
+    showToast('Modello pronto!', 'ok');
+  } catch(e) {
+    var msg = e.message || String(e);
+    var hint = msg.includes('Aborted') ? 'VRAM insufficiente — prova il modello ~2 GB' : msg.slice(0, 120);
+    setWGPUStatus('err', hint, 0);
+    document.getElementById('wgpu-prog-label').textContent = '';
+    showToast('Errore: '+hint.slice(0,60), 'err');
+    wgpuSt.pipeline = null;
+  } finally {
+    wgpuSt.loading = false;
+    loadBtn.disabled = false;
+  }
+}
+
+async function unloadWebGPUModel() {
+  var p = wgpuSt.pipeline;
+  if (!p) return;
+  var unloadBtn = document.getElementById('wgpu-unload-btn');
+  unloadBtn.disabled = true;
+  unloadBtn.textContent = 'Scaricamento...';
+
+  // transformers.js v3: PreTrainedModel exposes `sessions` (array of names).
+  // Each session key on the model object is an InferenceSession whose
+  // .handler.dispose() destroys the underlying ORT WebGPU session and
+  // calls GPUBuffer.destroy() on every allocated GPU buffer.
+  var freed = 0;
+  var model = p.model;
+  if (model) {
+    var sessionNames = Array.isArray(model.sessions) ? model.sessions : ['model'];
+    for (var i = 0; i < sessionNames.length; i++) {
+      var sess = model[sessionNames[i]];
+      if (sess && sess.handler && typeof sess.handler.dispose === 'function') {
+        try { await sess.handler.dispose(); freed++; } catch(e) {}
+      }
+    }
+  }
+
+  wgpuSt.pipeline = null;
+  wgpuSt.loadedModel = '';
+  updateCacheBadges();
+
+  setWGPUStatus('', freed > 0 ? 'VRAM liberata (' + freed + ' sessioni chiuse)' : 'Rimosso — GC liberer\u00e0 la VRAM', 0);
+  document.getElementById('wgpu-load-btn').style.display = 'flex';
+  unloadBtn.style.display = 'none';
+  unloadBtn.disabled = false;
+  unloadBtn.textContent = '\u25a0 SCARICA DALLA VRAM';
+  showToast(freed > 0 ? 'VRAM liberata' : 'Modello rimosso', 'ok');
+}
+
+function setWGPUStatus(state, msg, progress) {
+  var dot = document.getElementById('wgpu-dot');
+  if (dot) dot.className = 'dot'+(state?' '+state:'');
+  var txt = document.getElementById('wgpu-txt');
+  if (txt) txt.textContent = msg;
+  if (progress !== undefined) {
+    var bar = document.getElementById('wgpu-bar');
+    if (bar) bar.style.width = progress + '%';
+  }
+}
+
+
 // ===================== COPY / SAVE / RESET =====================
 
 function copyPrompt(which) {
-  const lines = which==='ltx' ? buildLTXLines() : buildZILines();
-  const text = linesToText(lines);
+  var lines = which==='ltx' ? buildLTXLines() : buildZILines();
+  var text = linesToText(lines);
   if (!text) { showToast('Nessun prompt da copiare','err'); return; }
   navigator.clipboard.writeText(text).then(function(){showToast('Prompt copiato!','ok');});
 }
 
 function savePrompt(which) {
-  const lines = which==='ltx' ? buildLTXLines() : buildZILines();
-  const text = linesToText(lines);
+  var lines = which==='ltx' ? buildLTXLines() : buildZILines();
+  var text = linesToText(lines);
   if (!text) { showToast('Nessun prompt da salvare','err'); return; }
   dlText(text, (which==='ltx'?'ltx23':'zimage')+'_prompt_'+Date.now()+'.txt');
 }
 
 function dlText(text, filename) {
-  const a = document.createElement('a');
+  var a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([text],{type:'text/plain'}));
   a.download = filename;
   a.click();
@@ -1185,7 +1358,7 @@ function dlText(text, filename) {
 function resetBuilder(which) {
   if (which==='ltx') {
     Object.assign(ltxSt,{shot:'',genre:'',location:'',lighting:'',palette:'',timeofday:'',opening:'',subject:'',movements:[],moment:'',transition:'',charCount:1,cammovement:'',focus:'',ambient:'',hasDialogue:false,dialogue:''});
-    ltxSt.chars.forEach(function(c){Object.assign(c,{gender:'',age:'',build:'',hair:'',clothing:'',expression:''}); });
+    ltxSt.chars.forEach(function(c){Object.assign(c,{gender:'',age:'',build:'',hair:'',clothing:'',expression:''});});
     activeCharTab = 0;
     document.getElementById('char-count-val').textContent = '1';
     document.getElementById('ltx-dial-tog').checked = false;
@@ -1194,15 +1367,8 @@ function resetBuilder(which) {
     document.querySelectorAll('#b-ltx .chip').forEach(function(c){c.classList.remove('sel');});
     renderCharTabs(); renderCharPanels(); ltxUpdate();
   } else {
-    Object.assign(ziSt,{subjectType:'',subjectAction:'',env:'',lq:'',ld:'',lt:'',lens:'',style:'',framing:'',dof:'',persp:'',res:'1024x1024',steps:'30',sampler:'DPM++ 2M Karras',cfg:'7'});
+    Object.assign(ziSt,{subjectType:'',subjectAction:'',env:'',lq:'',ld:'',lt:'',lens:'',style:'',framing:'',dof:'',persp:''});
     document.querySelectorAll('#b-zimage .chip').forEach(function(c){c.classList.remove('sel');});
-    ['zi-res','zi-steps','zi-sampler','zi-cfg'].forEach(function(cid){
-      const def = {res:'1024x1024',steps:'30',sampler:'DPM++ 2M Karras',cfg:'7'};
-      const field = cid.replace('zi-','');
-      document.querySelectorAll('#'+cid+' .chip').forEach(function(c){
-        if (c.dataset.value === def[field]) c.classList.add('sel');
-      });
-    });
     ziUpdate();
   }
   saveToStorage();
@@ -1211,26 +1377,34 @@ function resetBuilder(which) {
 
 // ===================== AI STORY =====================
 
+function fetchWithTimeout(url, opts, ms) {
+  var ctrl = new AbortController();
+  var tid = setTimeout(function(){ ctrl.abort(); }, ms);
+  return fetch(url, Object.assign({}, opts, {signal: ctrl.signal}))
+    .then(function(r){ clearTimeout(tid); return r; })
+    .catch(function(e){ clearTimeout(tid); throw e; });
+}
+
 async function loadModels() {
-  const ep = document.getElementById('ai-endpoint').value.trim();
+  var ep = document.getElementById('ai-endpoint').value.trim();
   if (!ep) { showToast('Inserisci un endpoint URL','err'); return; }
   setConn('spin','Connessione in corso...');
   try {
-    let models = [];
+    var models = [];
     if (aiSt.provider === 'ollama') {
-      const r = await fetch(ep.replace(/\/$/,'')+'/api/tags', {signal:AbortSignal.timeout(6000)});
+      var r = await fetchWithTimeout(ep.replace(/\/$/,'')+'/api/tags', {}, 7000);
       if (!r.ok) throw new Error('HTTP '+r.status);
-      const d = await r.json();
+      var d = await r.json();
       models = (d.models||[]).map(function(m){return m.name;});
     } else {
-      const r = await fetch(ep.replace(/\/$/,'')+'/v1/models', {signal:AbortSignal.timeout(6000)});
+      var r = await fetchWithTimeout(ep.replace(/\/$/,'')+'/v1/models', {}, 7000);
       if (!r.ok) throw new Error('HTTP '+r.status);
-      const d = await r.json();
+      var d = await r.json();
       models = (d.data||[]).map(function(m){return m.id;});
     }
     if (!models.length) { setConn('ok','Connesso \u2014 nessun modello'); showToast('Nessun modello trovato','err'); return; }
     aiSt.models = models;
-    const sel = document.getElementById('model-select');
+    var sel = document.getElementById('model-select');
     sel.innerHTML = models.map(function(m){return '<option value="'+m+'">'+m+'</option>';}).join('');
     if (aiSt.model && models.indexOf(aiSt.model)>-1) sel.value = aiSt.model;
     else { aiSt.model = models[0]; sel.value = models[0]; }
@@ -1238,75 +1412,103 @@ async function loadModels() {
     showToast(models.length+' modelli caricati','ok');
     saveToStorage();
   } catch(e) {
-    setConn('err','Errore: '+e.message);
-    showToast('Connessione fallita','err');
+    var isTimeout = e.name === 'AbortError';
+    var isCors = !isTimeout && (e.message === 'Failed to fetch' || e.message.includes('fetch'));
+    var hint = isTimeout
+      ? 'Timeout \u2014 Ollama non risponde. \u00c8 in esecuzione?'
+      : isCors
+        ? 'CORS bloccato \u2014 riavvia Ollama con: OLLAMA_ORIGINS=* ollama serve'
+        : 'Errore: ' + e.message;
+    setConn('err', hint);
+    showToast(hint, 'err');
   }
 }
 
 async function generateStory() {
-  const story = document.getElementById('ai-story').value.trim();
+  var story = document.getElementById('ai-story').value.trim();
   if (!story) { showToast('Scrivi prima la tua storia','err'); return; }
-  if (!aiSt.model) { showToast('Seleziona un modello AI','err'); return; }
+  if (aiSt.provider !== 'webgpu' && !aiSt.model) { showToast('Seleziona un modello AI','err'); return; }
+  if (aiSt.provider === 'webgpu' && !wgpuSt.pipeline) { showToast('Carica prima il modello WebGPU','err'); return; }
   if (aiSt.generating) return;
 
   aiSt.generating = true;
-  const btn = document.getElementById('gen-btn');
+  var btn = document.getElementById('gen-btn');
   btn.disabled = true;
   btn.textContent = 'GENERAZIONE IN CORSO...';
 
   document.getElementById('stream-area').style.display = 'block';
   document.getElementById('results-area').style.display = 'none';
-  const so = document.getElementById('stream-out');
+  var so = document.getElementById('stream-out');
   so.textContent = '';
 
-  const outNote = {ltx:'Generate LTX-2.3 video prompts only.',zimage:'Generate Z-Image image prompts only.',both:'Generate both LTX-2.3 video prompts and Z-Image image prompts, alternating or mixing as appropriate.'}[aiSt.outputMode];
-  const userMsg = outNote+'\n\nGenerate exactly '+aiSt.count+' prompts from the following story/idea:\n\n'+story;
-  const ep = document.getElementById('ai-endpoint').value.trim();
+  var outNote = {ltx:'Generate LTX-2.3 video prompts only.',zimage:'Generate Z-Image image prompts only.',both:'Generate both LTX-2.3 video and Z-Image image prompts, alternating.'}[aiSt.outputMode];
+  var userMsg = outNote+'\n\nGenerate exactly '+aiSt.count+' prompts from the following story/idea:\n\n'+story;
+  var ep = document.getElementById('ai-endpoint').value.trim();
 
   try {
-    let full = '';
+    var full = '';
 
-    if (aiSt.provider === 'ollama') {
-      const res = await fetch(ep.replace(/\/$/,'')+'/api/chat',{
+    if (aiSt.provider === 'webgpu') {
+      var messages = [{role:'system',content:SYSTEM_PROMPT},{role:'user',content:userMsg}];
+      if (window._hf && window._hf.TextStreamer && wgpuSt.pipeline.tokenizer) {
+        var streamer = new window._hf.TextStreamer(wgpuSt.pipeline.tokenizer, {
+          skip_prompt: true,
+          decode_kwargs: {skip_special_tokens: true},
+          callback_function: function(text) {
+            full += text;
+            so.textContent = full;
+            so.scrollTop = so.scrollHeight;
+          }
+        });
+        await wgpuSt.pipeline(messages, {max_new_tokens:4096, do_sample:true, temperature:0.8, streamer:streamer});
+      } else {
+        var output = await wgpuSt.pipeline(messages, {max_new_tokens:4096, do_sample:true, temperature:0.8, return_full_text:false});
+        var gen = output[0] && output[0].generated_text;
+        full = Array.isArray(gen) ? (gen[gen.length-1] && gen[gen.length-1].content) || '' : (gen || '');
+        so.textContent = full;
+      }
+
+    } else if (aiSt.provider === 'ollama') {
+      var res = await fetchWithTimeout(ep.replace(/\/$/,'')+'/api/chat',{
         method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({model:aiSt.model,messages:[{role:'system',content:SYSTEM_PROMPT},{role:'user',content:userMsg}],stream:true})
-      });
+      }, 120000);
       if (!res.ok) throw new Error('HTTP '+res.status);
-      const reader = res.body.getReader();
-      const dec = new TextDecoder();
+      var reader = res.body.getReader();
+      var dec = new TextDecoder();
       while (true) {
-        const {done,value} = await reader.read();
-        if (done) break;
-        const lines = dec.decode(value).split('\n').filter(Boolean);
-        for (const line of lines) {
-          try { const obj = JSON.parse(line); full += (obj&&obj.message&&obj.message.content)||''; so.textContent = full; so.scrollTop = so.scrollHeight; } catch(e){}
+        var chunk = await reader.read();
+        if (chunk.done) break;
+        var lines = dec.decode(chunk.value).split('\n').filter(Boolean);
+        for (var i=0; i<lines.length; i++) {
+          try { var obj = JSON.parse(lines[i]); full += (obj&&obj.message&&obj.message.content)||''; so.textContent = full; so.scrollTop = so.scrollHeight; } catch(e){}
         }
       }
     } else {
-      const res = await fetch(ep.replace(/\/$/,'')+'/v1/chat/completions',{
+      var res = await fetchWithTimeout(ep.replace(/\/$/,'')+'/v1/chat/completions',{
         method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({model:aiSt.model,messages:[{role:'system',content:SYSTEM_PROMPT},{role:'user',content:userMsg}],stream:true,temperature:0.8})
-      });
+      }, 120000);
       if (!res.ok) throw new Error('HTTP '+res.status);
-      const reader = res.body.getReader();
-      const dec = new TextDecoder();
+      var reader = res.body.getReader();
+      var dec = new TextDecoder();
       while (true) {
-        const {done,value} = await reader.read();
-        if (done) break;
-        const lines = dec.decode(value).split('\n').filter(function(l){return l.startsWith('data: ');});
-        for (const line of lines) {
-          const data = line.slice(6).trim();
+        var chunk = await reader.read();
+        if (chunk.done) break;
+        var lines = dec.decode(chunk.value).split('\n').filter(function(l){return l.startsWith('data: ');});
+        for (var i=0; i<lines.length; i++) {
+          var data = lines[i].slice(6).trim();
           if (data==='[DONE]') continue;
-          try { const obj = JSON.parse(data); full += (obj&&obj.choices&&obj.choices[0]&&obj.choices[0].delta&&obj.choices[0].delta.content)||''; so.textContent = full; so.scrollTop = so.scrollHeight; } catch(e){}
+          try { var obj = JSON.parse(data); full += (obj&&obj.choices&&obj.choices[0]&&obj.choices[0].delta&&obj.choices[0].delta.content)||''; so.textContent = full; so.scrollTop = so.scrollHeight; } catch(e){}
         }
       }
     }
 
-    showResults(parsePrompts(full), full);
+    showResults(parsePrompts(full));
   } catch(e) {
     document.getElementById('stream-area').style.display = 'none';
     document.getElementById('results-area').style.display = 'block';
-    document.getElementById('results-list').innerHTML = '<div class="err-box"><strong>Errore di connessione</strong>'+esc(e.message)+'<br><br>'+(aiSt.provider==='ollama'?'Assicurati che Ollama sia avviato. Avvia con: <strong>OLLAMA_ORIGINS=* ollama serve</strong>':'Assicurati che LM Studio sia avviato e il server locale sia attivo.')+'</div>';
+    document.getElementById('results-list').innerHTML = '<div class="err-box"><strong>Errore</strong>'+esc(e.message)+'</div>';
     document.getElementById('bulk-actions').innerHTML = '';
     document.getElementById('results-count').textContent = '';
   } finally {
@@ -1317,49 +1519,79 @@ async function generateStory() {
 }
 
 function parsePrompts(text) {
-  const re = /---\s*PROMPT\s*(\d+):\s*([^\n-]+?)\s*---\s*([\s\S]*?)(?=---\s*PROMPT\s*\d+:|$)/gi;
-  const res = [];
-  let m;
-  while ((m = re.exec(text)) !== null) {
-    const tx = m[3].trim();
-    if (tx) res.push({num:parseInt(m[1]), title:m[2].trim(), text:tx});
+  var res, m;
+
+  // Strategy 1: --- PROMPT N: TITLE --- (requested format, flexible dashes/spaces)
+  res = [];
+  var re1 = /[-*]{2,}\s*PROMPT\s*(\d+)[:\s]+([^\n\-]*?)\s*[-*]{2,}\s*\n([\s\S]*?)(?=[-*]{2,}\s*PROMPT\s*\d+|$)/gi;
+  while ((m = re1.exec(text)) !== null) {
+    var tx = m[3].trim();
+    if (tx) res.push({num:parseInt(m[1]), title:(m[2]||'Prompt '+m[1]).trim()||'Prompt '+m[1], text:tx});
   }
-  if (!res.length && text.trim()) res.push({num:1, title:'Generato', text:text.trim()});
-  return res;
+  if (res.length >= 2) return res;
+
+  // Strategy 2: "1." / "1)" / "**1.**" / "Prompt 1:" at line start
+  res = [];
+  var re2 = /(?:^|\n)[ \t]*(?:\*{0,2}[ \t]*)(?:Prompt\s+)?(\d+)[.):\s]+\*{0,2}[ \t]*([^\n]*)\n?([\s\S]*?)(?=(?:\n[ \t]*(?:\*{0,2}[ \t]*)(?:Prompt\s+)?\d+[.):\s])|$)/gi;
+  while ((m = re2.exec(text)) !== null) {
+    var body = (m[2] + (m[3] ? '\n' + m[3] : '')).trim();
+    if (body.length > 15) res.push({num:parseInt(m[1]), title:'Prompt '+m[1], text:body});
+  }
+  if (res.length >= 2) return res;
+
+  // Strategy 3: blocks separated by 2+ blank lines
+  res = [];
+  text.split(/\n{2,}/).forEach(function(block, i) {
+    var tx = block.trim();
+    if (tx.length > 20) res.push({num:i+1, title:'Prompt '+(i+1), text:tx});
+  });
+  if (res.length >= 2) return res;
+
+  // Strategy 4: each non-empty line is a prompt (single-line format)
+  res = [];
+  text.split('\n').forEach(function(line) {
+    var tx = line.trim();
+    if (tx.length > 20) res.push({num:res.length+1, title:'Prompt '+(res.length+1), text:tx});
+  });
+  if (res.length >= 2) return res;
+
+  // Last resort: single card with full output
+  if (text.trim()) return [{num:1, title:'Generato', text:text.trim()}];
+  return [];
 }
 
-function showResults(prompts, rawText) {
+function showResults(prompts) {
   document.getElementById('stream-area').style.display = 'none';
-  const ra = document.getElementById('results-area');
+  var ra = document.getElementById('results-area');
   ra.style.display = 'block';
   document.getElementById('results-count').textContent = prompts.length + ' prompt' + (prompts.length!==1?'s':'');
   aiSt.results = prompts;
 
-  const list = document.getElementById('results-list');
+  var list = document.getElementById('results-list');
   list.innerHTML = '';
   prompts.forEach(function(p, i) {
-    const card = document.createElement('div');
+    var card = document.createElement('div');
     card.className = 'pc';
-    card.innerHTML = '<div class="pc-head"><div class="pc-num">'+p.num+'</div><div class="pc-title">'+esc(p.title)+'</div><div class="pc-badge">'+aiSt.outputMode.toUpperCase()+'</div></div><div class="pc-text">'+esc(p.text)+'</div><div class="pc-actions"><button class="btn btn-p btn-sm" onclick="copyCard('+i+')">&#10008; Copia</button><button class="btn btn-s btn-sm" onclick="copyCard('+i+')">&#8594; Builder</button></div>';
+    card.innerHTML = '<div class="pc-head"><div class="pc-num">'+p.num+'</div><div class="pc-title">'+esc(p.title)+'</div><div class="pc-badge">'+aiSt.outputMode.toUpperCase()+'</div></div><div class="pc-text">'+esc(p.text)+'</div><div class="pc-actions"><button class="btn btn-p btn-sm" onclick="copyCard('+i+')">&#10008; Copia</button></div>';
     list.appendChild(card);
   });
 
-  const bulk = document.getElementById('bulk-actions');
+  var bulk = document.getElementById('bulk-actions');
   bulk.innerHTML = '';
   if (prompts.length > 1) {
-    const ba = document.createElement('button');
+    var ba = document.createElement('button');
     ba.className = 'btn btn-p';
     ba.textContent = '\u2398 Copia tutti';
     ba.onclick = function() {
-      const all = prompts.map(function(p){return '--- PROMPT '+p.num+': '+p.title+' ---\n'+p.text;}).join('\n\n');
+      var all = prompts.map(function(p){return p.text.trim();}).join('\n');
       navigator.clipboard.writeText(all).then(function(){showToast('Tutti i prompt copiati!','ok');});
     };
-    const bs = document.createElement('button');
+    var bs = document.createElement('button');
     bs.className = 'btn btn-s';
-    bs.textContent = '\u2193 Salva tutti .txt';
+    bs.textContent = '\u2193 Salva .txt';
     bs.onclick = function() {
-      const all = prompts.map(function(p){return '--- PROMPT '+p.num+': '+p.title+' ---\n'+p.text;}).join('\n\n');
-      dlText(all, 'ai_story_prompts_'+Date.now()+'.txt');
+      var all = prompts.map(function(p){return p.text.trim();}).join('\n');
+      dlText(all, 'story_prompts_'+Date.now()+'.txt');
     };
     bulk.appendChild(ba);
     bulk.appendChild(bs);
@@ -1367,16 +1599,16 @@ function showResults(prompts, rawText) {
 }
 
 function copyCard(idx) {
-  const p = aiSt.results[idx];
+  var p = aiSt.results[idx];
   if (!p) return;
   navigator.clipboard.writeText(p.text).then(function(){showToast('Prompt '+p.num+' copiato!','ok');});
 }
 
 // ===================== TOAST =====================
 
-let _tt;
+var _tt;
 function showToast(msg, type) {
-  const t = document.getElementById('toast');
+  var t = document.getElementById('toast');
   t.textContent = msg;
   t.className = 'toast show'+(type?' '+type:'');
   clearTimeout(_tt);
@@ -1385,26 +1617,25 @@ function showToast(msg, type) {
 
 // ===================== LOCALSTORAGE =====================
 
-const LS = 'ltxpb2_';
+var LS = 'ltxpb3_';
 
 function saveToStorage() {
   try {
     localStorage.setItem(LS+'ltx', JSON.stringify(ltxSt));
     localStorage.setItem(LS+'zi', JSON.stringify(ziSt));
-    localStorage.setItem(LS+'ep', aiSt.endpoint);
-    localStorage.setItem(LS+'model', aiSt.model);
-    localStorage.setItem(LS+'prov', aiSt.provider);
+    localStorage.setItem(LS+'ep', aiSt.endpoint||'');
+    localStorage.setItem(LS+'model', aiSt.model||'');
+    localStorage.setItem(LS+'prov', aiSt.provider||'ollama');
   } catch(e){}
 }
 
 function loadFromStorage() {
   try {
-    const sl = localStorage.getItem(LS+'ltx');
+    var sl = localStorage.getItem(LS+'ltx');
     if (sl) {
-      const d = JSON.parse(sl);
+      var d = JSON.parse(sl);
       Object.assign(ltxSt, d);
-      // re-apply chip selections
-      const singles = ['shot','genre','location','lighting','palette','timeofday','opening','subject','moment','transition','cammovement','focus','ambient'];
+      var singles = ['shot','genre','location','lighting','palette','timeofday','opening','subject','moment','transition','cammovement','focus','ambient'];
       singles.forEach(function(f){
         if (ltxSt[f]) applyChip('ltx-'+f.replace(/([A-Z])/g,'-$1').toLowerCase(), ltxSt[f]);
       });
@@ -1418,35 +1649,36 @@ function loadFromStorage() {
       renderCharTabs(); renderCharPanels();
     }
 
-    const sz = localStorage.getItem(LS+'zi');
+    var sz = localStorage.getItem(LS+'zi');
     if (sz) {
-      const d = JSON.parse(sz);
-      Object.assign(ziSt, d);
-      const zf = ['subjectType','subjectAction','env','lq','ld','lt','lens','style','framing','dof','persp','res','steps','sampler','cfg'];
-      const idmap = {subjectType:'zi-subject-type',subjectAction:'zi-subject-action',env:'zi-env',lq:'zi-lq',ld:'zi-ld',lt:'zi-lt',lens:'zi-lens',style:'zi-style',framing:'zi-framing',dof:'zi-dof',persp:'zi-persp',res:'zi-res',steps:'zi-steps',sampler:'zi-sampler',cfg:'zi-cfg'};
-      zf.forEach(function(f){ if (ziSt[f]) applyChip(idmap[f], ziSt[f]); });
+      var dz = JSON.parse(sz);
+      Object.assign(ziSt, dz);
+      var idmap = {subjectType:'zi-subject-type',subjectAction:'zi-subject-action',env:'zi-env',lq:'zi-lq',ld:'zi-ld',lt:'zi-lt',lens:'zi-lens',style:'zi-style',framing:'zi-framing',dof:'zi-dof',persp:'zi-persp'};
+      Object.keys(idmap).forEach(function(f){ if (ziSt[f]) applyChip(idmap[f], ziSt[f]); });
     }
 
-    const ep = localStorage.getItem(LS+'ep');
+    var ep = localStorage.getItem(LS+'ep');
     if (ep) { aiSt.endpoint = ep; document.getElementById('ai-endpoint').value = ep; }
-    const model = localStorage.getItem(LS+'model');
+    var model = localStorage.getItem(LS+'model');
     if (model) aiSt.model = model;
-    const prov = localStorage.getItem(LS+'prov');
-    if (prov) {
-      aiSt.provider = prov;
-      document.querySelectorAll('.prov-btn').forEach(function(b){b.classList.toggle('active',b.dataset.prov===prov);});
-    }
+    var prov = localStorage.getItem(LS+'prov') || 'ollama';
+    aiSt.provider = prov;
+    document.querySelectorAll('.prov-btn').forEach(function(b){b.classList.toggle('active',b.dataset.prov===prov);});
+    var isWebGPU = prov === 'webgpu';
+    document.getElementById('ep-panel').style.display = isWebGPU ? 'none' : 'block';
+    document.getElementById('wgpu-panel').style.display = isWebGPU ? 'block' : 'none';
+    updateCacheBadges();
   } catch(e){}
 }
 
 function applyChip(cid, value) {
-  const el = document.getElementById(cid);
+  var el = document.getElementById(cid);
   if (!el || !value) return;
   el.querySelectorAll('.chip').forEach(function(c){ if (c.dataset.value === value) c.classList.add('sel'); });
 }
 
 function applyChips(cid, values) {
-  const el = document.getElementById(cid);
+  var el = document.getElementById(cid);
   if (!el || !values) return;
   el.querySelectorAll('.chip').forEach(function(c){ if (values.indexOf(c.dataset.value)>-1) c.classList.add('sel'); });
 }
