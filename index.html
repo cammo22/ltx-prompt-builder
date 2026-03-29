@@ -1369,6 +1369,16 @@ function resetBuilder(which) {
 
 // ===================== AI STORY =====================
 
+var _guideCache = null;
+async function fetchGuide() {
+  if (_guideCache) return _guideCache;
+  try {
+    var r = await fetch('./PROMPT_GUIDE.md');
+    if (r.ok) { _guideCache = await r.text(); return _guideCache; }
+  } catch(e) {}
+  return null; // fallback to hardcoded SYSTEM_PROMPT
+}
+
 function shuffleArray(arr) {
   var a = arr.slice();
   for (var i = a.length - 1; i > 0; i--) {
@@ -1486,23 +1496,29 @@ async function generateStory() {
   var so = document.getElementById('stream-out');
   so.textContent = '';
 
-  var outNote = {ltx:'LTX-2.3 VIDEO prompts only.',zimage:'Z-IMAGE still image prompts only.',both:'Alternate: odd = LTX-2.3 video, even = Z-Image still.'}[aiSt.outputMode];
+  var guide = await fetchGuide();
+  var sysPrompt = guide || SYSTEM_PROMPT;
+
+  var modeRules = {
+    ltx: 'Use LTX-VIDEO prompt structure. End every prompt with "Sound: [...]". No Z-Image rules.',
+    zimage: 'Use Z-IMAGE prompt structure. NO "Sound:" section — still images have no audio. NO camera movement descriptions.',
+    both: 'Odd-numbered prompts = LTX-VIDEO (with Sound:). Even-numbered = Z-IMAGE (no Sound:, no camera movement).',
+  }[aiSt.outputMode];
   var shotList = buildShotList(aiSt.count, aiSt.outputMode);
-  var userMsg = 'Mode: '+outNote
-    +'\n\nStory/idea:\n'+story
-    +'\n\nCINEMATOGRAPHY PARAMETERS — use EXACTLY these for each prompt (no exceptions):\n'+shotList
+  var userMsg = 'OUTPUT MODE: '+modeRules
+    +'\n\nSTORY:\n'+story
+    +'\n\nCINEMATOGRAPHY PARAMETERS (mandatory — one per prompt, no swapping):\n'+shotList
     +'\n\nGenerate EXACTLY '+aiSt.count+' prompts.'
-    +'\nEach prompt: single unbroken line, no internal periods, end with "."'
-    +'\nEvery prompt: self-contained with full scene, character, camera, lighting, sound.'
-    +'\nWeave the shot/camera/lighting/mood naturally into the prompt text.'
-    +'\nStart your reply immediately with "--- PROMPT 1:" — no intro text.';
+    +'\nFormat: --- PROMPT N: TITLE --- on its own line, then prompt content on the NEXT line.'
+    +'\nEach prompt content = one single unbroken line, no internal periods, ends with "."'
+    +'\nStart immediately with "--- PROMPT 1:" — no intro text, no explanations.';
   var ep = document.getElementById('ai-endpoint').value.trim();
 
   try {
     var full = '';
 
     if (aiSt.provider === 'webgpu') {
-      var messages = [{role:'system',content:SYSTEM_PROMPT},{role:'user',content:userMsg}];
+      var messages = [{role:'system',content:sysPrompt},{role:'user',content:userMsg}];
       if (window._hf && window._hf.TextStreamer && wgpuSt.pipeline.tokenizer) {
         var streamer = new window._hf.TextStreamer(wgpuSt.pipeline.tokenizer, {
           skip_prompt: true,
@@ -1524,7 +1540,7 @@ async function generateStory() {
     } else if (aiSt.provider === 'ollama') {
       var res = await fetchWithTimeout(ep.replace(/\/$/,'')+'/api/chat',{
         method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({model:aiSt.model,messages:[{role:'system',content:SYSTEM_PROMPT},{role:'user',content:userMsg}],stream:true})
+        body:JSON.stringify({model:aiSt.model,messages:[{role:'system',content:sysPrompt},{role:'user',content:userMsg}],stream:true})
       }, 120000);
       if (!res.ok) throw new Error('HTTP '+res.status);
       var reader = res.body.getReader();
@@ -1540,7 +1556,7 @@ async function generateStory() {
     } else {
       var res = await fetchWithTimeout(ep.replace(/\/$/,'')+'/v1/chat/completions',{
         method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({model:aiSt.model,messages:[{role:'system',content:SYSTEM_PROMPT},{role:'user',content:userMsg}],stream:true,temperature:0.8})
+        body:JSON.stringify({model:aiSt.model,messages:[{role:'system',content:sysPrompt},{role:'user',content:userMsg}],stream:true,temperature:0.7})
       }, 120000);
       if (!res.ok) throw new Error('HTTP '+res.status);
       var reader = res.body.getReader();
@@ -1589,7 +1605,12 @@ function preprocessLLMOutput(raw) {
 }
 
 function cleanPromptText(tx) {
-  // Collapse internal newlines within a prompt into a comma+space (small models sometimes add them)
+  // Strip prompt header if it got fused into the text on the same line
+  // handles: "--- PROMPT 1: TITLE --- content" and "--- PROMPT 1: TITLE — content"
+  tx = tx.replace(/^-{2,}\s*PROMPT\s*\d+[:\s]+[^—\-\n]*?(?:-{2,}|—|–)\s*/i, '');
+  // Strip stray leading dashes/markers
+  tx = tx.replace(/^[-*#=\s]+/, '');
+  // Collapse internal newlines into a comma+space
   tx = tx.replace(/\n+/g, ', ');
   // Collapse multiple commas/spaces
   tx = tx.replace(/,\s*,/g, ',');
@@ -1603,6 +1624,17 @@ function cleanPromptText(tx) {
 function parsePrompts(text) {
   text = preprocessLLMOutput(text);
   var res, m;
+
+  // Strategy 0: single-line fused format "--- PROMPT N: TITLE --- content" or "--- PROMPT N: TITLE — content"
+  // This happens when the model ignores the "header on its own line" rule
+  res = [];
+  var re0 = /---\s*PROMPT\s*(\d+):\s*([^—\-\n]+?)\s*(?:---|—|–)\s*(.+?)(?=\s*---\s*PROMPT\s*\d+|$)/gi;
+  while ((m = re0.exec(text)) !== null) {
+    var tx0 = cleanPromptText(m[3].trim());
+    var ti0 = m[2].trim().replace(/^[-:]+|[-:]+$/g,'').trim() || 'Prompt '+m[1];
+    if (tx0.length > 15) res.push({num:parseInt(m[1]), title:ti0, text:tx0});
+  }
+  if (res.length >= 2) return res;
 
   // Strategy 1: --- PROMPT N: TITLE --- or ### PROMPT N: TITLE ### or ** PROMPT N ** etc.
   res = [];
