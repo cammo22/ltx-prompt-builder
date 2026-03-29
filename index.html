@@ -499,22 +499,22 @@
           <!-- WebGPU -->
           <div id="wgpu-panel" style="display:none">
             <div class="wmodel-cards">
-              <div class="wmodel-card wm-active" data-wmodel="HuggingFaceTB/SmolLM2-1.7B-Instruct" data-wdtype="q4f16" onclick="setWGPUModel(this)">
+              <div class="wmodel-card wm-active" data-wmodel="onnx-community/Llama-3.2-1B-Instruct-q4f16" data-wdtype="q4f16" onclick="setWGPUModel(this)">
                 <div>
-                  <div class="wmodel-size">~2 GB</div>
-                  <div class="wmodel-name">SmolLM2-1.7B-Instruct</div>
-                  <div class="wmodel-repo">HuggingFaceTB/SmolLM2-1.7B-Instruct</div>
+                  <div class="wmodel-size">~1.2 GB</div>
+                  <div class="wmodel-name">Llama 3.2 · 1B Instruct</div>
+                  <div class="wmodel-repo">onnx-community/Llama-3.2-1B-Instruct-q4f16</div>
                 </div>
                 <div class="wmodel-tags">
                   <span class="wmtag wmtag-nocache" id="wbadge-0">non in cache</span>
                   <span class="wmtag wmtag-vram" id="wvram-0" style="display:none">IN VRAM</span>
                 </div>
               </div>
-              <div class="wmodel-card" data-wmodel="onnx-community/Qwen2.5-3B-Instruct" data-wdtype="q4f16" onclick="setWGPUModel(this)">
+              <div class="wmodel-card" data-wmodel="onnx-community/Phi-3.5-mini-instruct-onnx-web" data-wdtype="q4f16" onclick="setWGPUModel(this)">
                 <div>
-                  <div class="wmodel-size">~4 GB</div>
-                  <div class="wmodel-name">Qwen2.5-3B-Instruct</div>
-                  <div class="wmodel-repo">onnx-community/Qwen2.5-3B-Instruct</div>
+                  <div class="wmodel-size">~2.3 GB</div>
+                  <div class="wmodel-name">Phi 3.5 Mini · 3.8B Instruct</div>
+                  <div class="wmodel-repo">onnx-community/Phi-3.5-mini-instruct-onnx-web</div>
                 </div>
                 <div class="wmodel-tags">
                   <span class="wmtag wmtag-nocache" id="wbadge-1">non in cache</span>
@@ -523,8 +523,8 @@
               </div>
               <div class="wmodel-card" data-wmodel="onnx-community/Qwen2.5-7B-Instruct" data-wdtype="q4f16" onclick="setWGPUModel(this)">
                 <div>
-                  <div class="wmodel-size">~6 GB</div>
-                  <div class="wmodel-name">Qwen2.5-7B-Instruct</div>
+                  <div class="wmodel-size">~4.5 GB</div>
+                  <div class="wmodel-name">Qwen 2.5 · 7B Instruct</div>
                   <div class="wmodel-repo">onnx-community/Qwen2.5-7B-Instruct</div>
                 </div>
                 <div class="wmodel-tags">
@@ -755,48 +755,37 @@ const CHAR_OPTS = {
   expression:[{v:'',l:'\u2014'},{v:'neutral',l:'Neutral'},{v:'determined',l:'Determined'},{v:'fearful',l:'Fearful'},{v:'joyful',l:'Joyful'},{v:'angry',l:'Angry'},{v:'sorrowful',l:'Sorrowful'},{v:'pensive',l:'Pensive'},{v:'surprised',l:'Surprised'},{v:'stoic',l:'Stoic'}],
 };
 
-const SYSTEM_PROMPT = `You are a specialized LTX-Video prompt engineer. Your ONLY job is to output ready-to-use video generation prompts. Do NOT write any introduction, explanation, greeting, or commentary — output ONLY the prompts in the exact format below.
+const SYSTEM_PROMPT = `You are an LTX-Video prompt engineer. Output ONLY video/image generation prompts — no intro, no explanations, no commentary.
 
-━━━ WHAT IS LTX-VIDEO ━━━
-LTX-Video is an open-source video diffusion model. Each prompt describes one 3–8 second video clip. The model reads the entire prompt as a single description — every detail you include (shot type, character appearance, action, camera, lighting, sound) directly shapes the generated video. Dense, specific prompts produce far better results than vague ones.
+RULES:
+1. English only. Spoken dialogue inline in original language in quotes ("Aspetta!" she whispers).
+2. Each prompt = ONE single unbroken line. No internal line breaks.
+3. No internal periods. One single period at the very end only.
+4. Every prompt is self-contained: full scene, characters, lighting, camera, sound every time.
+5. Follow the cinematography parameters given in the user message exactly — they determine shot size, camera move, lighting, and mood for each prompt.
 
-━━━ PROMPT ANATOMY ━━━
-Build every prompt as a single continuous line in this order:
-[shot type & camera angle] → [visual style / cinematic genre] → [location & environment details] → [lighting quality, color palette, time of day] → [full character description: age, gender, build, hair, clothing, expression] → [action described from first to last frame] → [camera movement] → [sound design]
+LTX-VIDEO PROMPT ORDER (single line):
+[shot & angle], [visual style], [location & environment], [lighting & palette & time of day], [character: age/gender/build/hair/clothing/expression], [action start→end], [camera movement], [Sound: ...]
 
-━━━ MANDATORY RULES ━━━
-1. OUTPUT ONLY PROMPTS — zero intro text, zero explanation, zero meta-commentary
-2. ALL TEXT IN ENGLISH — if a character speaks, write dialogue inline in the original language in quotes (e.g. "Aspetta!" she whispers)
-3. ONE LINE PER PROMPT — absolutely no internal line breaks inside a prompt
-4. NO INTERNAL PERIODS — commas and conjunctions only; one single period at the very end
-5. SELF-CONTAINED — every prompt stands alone; repeat full character and scene description every time; never reference "the previous shot" or "as seen before"
-6. STORY ARC — vary shot sizes (extreme close-up → wide → medium), camera moves, and emotional progression across all prompts
+Z-IMAGE PROMPT ORDER (single line):
+[subject & action], [environment], [lighting & direction], [lens / medium], [composition & framing], [depth of field], [perspective]
 
-━━━ OUTPUT FORMAT — USE EXACTLY THIS, NO DEVIATIONS ━━━
+OUTPUT FORMAT — use exactly:
+--- PROMPT 1: TITLE ---
+[prompt line ending with a period]
 
---- PROMPT 1: [SHORT TITLE IN CAPS] ---
-[the full single-line prompt ending with a period]
+--- PROMPT 2: TITLE ---
+[prompt line ending with a period]
 
---- PROMPT 2: [SHORT TITLE IN CAPS] ---
-[the full single-line prompt ending with a period]
-
-(continue for all requested prompts)
-
-━━━ FULL WORKED EXAMPLE (3 prompts for "a spy chasing someone through rain") ━━━
-
---- PROMPT 1: RAINY ALLEY ---
-Extreme close-up low-angle shot, neo-noir cinematic style, dark rain-soaked alley in a European city at midnight, blue-green neon reflections shimmering on wet cobblestones, deep shadows with pools of amber light, a woman in her early 30s with wet dark hair plastered to her face wearing a black trench coat runs hard into frame from the left, her expression fierce and desperate, she glances back over her shoulder and surges forward, handheld camera chases her from knee height tilting up as she accelerates past, Sound: heavy downpour, echoing footsteps on stone, distant police sirens.
+EXAMPLE (spy chase in rain):
+--- PROMPT 1: ALLEY SPRINT ---
+Extreme close-up low-angle, neo-noir, rain-soaked European alley at midnight, blue-green neon reflections on wet cobblestones, woman early 30s wet dark hair black trench coat expression desperate runs hard into frame glancing back, handheld camera chases from knee height tilting up, Sound: heavy rain, echoing footsteps, distant sirens.
 
 --- PROMPT 2: ROOFTOP PURSUIT ---
-Wide establishing aerial shot descending rapidly, hyperrealistic action thriller, rain-lashed urban rooftop at night covered in puddles and HVAC units, high-contrast orange streetlight glow rising from below meeting cold blue-black stormlit sky, a lean man in his mid-40s with short grey stubble wearing a soaked grey hoodie sprints across the rooftop, 30 metres behind him a woman in a black trench coat closes the distance with long powerful strides, both lit by a lightning flash that freezes them for a fraction of a second, drone camera drops to eye level as they charge toward the far edge, Sound: thunder crack, howling wind, pounding footsteps on wet gravel.
+Extreme wide aerial shot, hyperrealistic thriller, rain-lashed city rooftop night puddles and HVAC units, orange streetlight from below meets cold blue-black sky, lean man mid-40s grey stubble soaked grey hoodie sprints pursued by woman in black trench coat 30m behind, both frozen by lightning flash, drone drops to eye level as they charge the edge, Sound: thunder, howling wind, pounding gravel.
 
---- PROMPT 3: CONFRONTATION ON FIRE ESCAPE ---
-Medium shot slightly low angle, gritty noir realism, exterior iron fire escape of a weathered red-brick building lashed by rain, warm amber window glow from inside silhouettes both figures against the darkness, night, a woman in her early 30s in a soaked black trench coat grabs the lapels of a breathless man in a grey hoodie and slams him against the railing, both are panting and rain-drenched, their faces centimetres apart, her expression is fury mixed with recognition and his is exhausted defeat, static camera holds then slowly pushes in on their faces, Sound: rain hammering metal grating, laboured breathing, faint city traffic below.
-
-━━━ Z-IMAGE PROMPT ANATOMY (use for still image mode) ━━━
-[subject type and action], [environment and context], [lighting quality and direction], [lens type or artistic medium], [composition and framing], [depth of field], [perspective and viewpoint]. End with one period.`;
-
-// ===================== STATE =====================
+--- PROMPT 3: FIRE ESCAPE ---
+Medium shot low angle, gritty noir, iron fire escape red-brick building lashed by rain, amber window glow silhouettes both figures, night, woman early 30s black trench coat grabs lapels of breathless man grey hoodie slams him against railing faces centimetres apart fury meets exhausted defeat, static camera slow push-in on their faces, Sound: rain on metal, laboured breathing, faint city traffic.`;
 
 // ===================== STATE =====================
 
@@ -826,7 +815,7 @@ const aiSt = {
 };
 
 const wgpuSt = {
-  model:'HuggingFaceTB/SmolLM2-1.7B-Instruct',
+  model:'onnx-community/Llama-3.2-1B-Instruct-q4f16',
   dtype:'q4f16',
   pipeline:null,loadedModel:'',loading:false,
 };
@@ -1225,9 +1214,9 @@ function setConn(state, msg) {
 
 // Track which models were successfully downloaded (survives page reload)
 var WMODELS = [
-  {id:'HuggingFaceTB/SmolLM2-1.7B-Instruct', dtype:'q4f16'},
-  {id:'onnx-community/Qwen2.5-3B-Instruct',   dtype:'q4f16'},
-  {id:'onnx-community/Qwen2.5-7B-Instruct',   dtype:'q4f16'},
+  {id:'onnx-community/Llama-3.2-1B-Instruct-q4f16',    dtype:'q4f16'},
+  {id:'onnx-community/Phi-3.5-mini-instruct-onnx-web', dtype:'q4f16'},
+  {id:'onnx-community/Qwen2.5-7B-Instruct',            dtype:'q4f16'},
 ];
 
 function getCachedModels() {
@@ -1380,6 +1369,59 @@ function resetBuilder(which) {
 
 // ===================== AI STORY =====================
 
+function shuffleArray(arr) {
+  var a = arr.slice();
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+  }
+  return a;
+}
+
+function buildShotList(count, mode) {
+  // Short-code pools — compact tokens, clear meaning
+  var shots = shuffleArray([
+    'ECU (extreme close-up)', 'CU (close-up)', 'MCU (med close-up)',
+    'MS (medium shot)', 'MWS (med wide)', 'WS (wide shot)',
+    'EWS (extreme wide)', 'low-angle', 'high-angle',
+    'bird\'s-eye', 'ground-level', 'over-shoulder', 'dutch angle',
+  ]);
+  var cameras = shuffleArray([
+    'static', 'slow push-in', 'slow pull-back', 'handheld shaky',
+    'drone descent', 'side tracking', 'orbit around subject',
+    'tilt up', 'tilt down', 'crane down', 'whip pan', 'dolly zoom',
+  ]);
+  var lights = shuffleArray([
+    'harsh midday sun', 'golden hour warm amber', 'magic hour purple-orange',
+    'blue hour cool twilight', 'neon night practical', 'backlit silhouette night',
+    'overcast flat muted', 'stormy dramatic clouds', 'candlelight flickering',
+    'hard chiaroscuro noir', 'cold fluorescent interior', 'soft window light',
+  ]);
+  var moods = shuffleArray([
+    'tense/urgent', 'melancholic/longing', 'wonder/awe',
+    'intimate/vulnerable', 'mysterious/ambiguous', 'joyful/euphoric',
+    'grief/heavy', 'confrontational', 'contemplative/still',
+    'chaotic/overwhelming', 'eerie/uncanny', 'hopeful/expansive',
+  ]);
+  var lenses = mode === 'zimage' ? shuffleArray([
+    '85mm shallow DOF', '24mm wide deep focus', '50mm standard',
+    '200mm telephoto compressed', 'macro extreme detail', 'fisheye', 'tilt-shift',
+  ]) : null;
+
+  var lines = [];
+  for (var i = 0; i < count; i++) {
+    var parts = [
+      shots[i % shots.length],
+      cameras[i % cameras.length],
+      lights[i % lights.length],
+      moods[i % moods.length],
+    ];
+    if (lenses) parts.push(lenses[i % lenses.length]);
+    lines.push('#'+(i+1)+' ['+parts.join(' | ')+']');
+  }
+  return lines.join('\n');
+}
+
 function fetchWithTimeout(url, opts, ms) {
   var ctrl = new AbortController();
   var tid = setTimeout(function(){ ctrl.abort(); }, ms);
@@ -1444,13 +1486,16 @@ async function generateStory() {
   var so = document.getElementById('stream-out');
   so.textContent = '';
 
-  var outNote = {ltx:'Generate LTX-2.3 VIDEO prompts only (use the LTX-Video prompt anatomy).',zimage:'Generate Z-IMAGE still image prompts only (use the Z-Image prompt anatomy).',both:'Alternate: odd-numbered prompts are LTX-2.3 video, even-numbered are Z-Image still image.'}[aiSt.outputMode];
-  var userMsg = outNote+'\n\nGenerate EXACTLY '+aiSt.count+' prompts for this story/idea:\n\n'+story+'\n\n'
-    +'REMINDERS:\n'
-    +'- Output ONLY the prompts using the --- PROMPT N: TITLE --- format. No other text.\n'
-    +'- Each prompt = one single line, no internal line breaks, one period at the end.\n'
-    +'- Every prompt must be self-contained with full scene, character, camera, and sound details.\n'
-    +'- Start your response immediately with "--- PROMPT 1:"';
+  var outNote = {ltx:'LTX-2.3 VIDEO prompts only.',zimage:'Z-IMAGE still image prompts only.',both:'Alternate: odd = LTX-2.3 video, even = Z-Image still.'}[aiSt.outputMode];
+  var shotList = buildShotList(aiSt.count, aiSt.outputMode);
+  var userMsg = 'Mode: '+outNote
+    +'\n\nStory/idea:\n'+story
+    +'\n\nCINEMATOGRAPHY PARAMETERS — use EXACTLY these for each prompt (no exceptions):\n'+shotList
+    +'\n\nGenerate EXACTLY '+aiSt.count+' prompts.'
+    +'\nEach prompt: single unbroken line, no internal periods, end with "."'
+    +'\nEvery prompt: self-contained with full scene, character, camera, lighting, sound.'
+    +'\nWeave the shot/camera/lighting/mood naturally into the prompt text.'
+    +'\nStart your reply immediately with "--- PROMPT 1:" — no intro text.';
   var ep = document.getElementById('ai-endpoint').value.trim();
 
   try {
