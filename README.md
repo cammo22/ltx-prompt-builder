@@ -1,5 +1,7 @@
 # 🎬 LTX Prompt Builder
 
+[![Discord](https://img.shields.io/badge/Discord-DaProd-5865F2?logo=discord&logoColor=white)](https://discord.gg/Njs52aacwq)
+
 **Crea prompt per LTX-Video con solo click — zero tastiera.**
 
 > A zero-keyboard prompt builder for [LTX-Video](https://github.com/Lightricks/LTX-Video) (v2.3). Pick options, get a ready-to-use prompt.
